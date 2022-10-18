@@ -23,27 +23,54 @@
                 </div>
                 <div class="col-12 col-md-6">
                     <div class="form">
-                        <form action="/register/create" method="post" class="p-4 bg-white rounded"
+                        <form action="/register/create" method="post" class="p-4 bg-white rounded" id="formSignup"
                             style="max-width: 70%;">
                             <div class="row text-center justify-content-center align-items-center">
                                 <div class="col-10 my-2">
                                     <input type="text" class="form-control" name="login" placeholder="Enter login"
-                                        minlength="5" maxlength="20" required>
+                                        value="{{user.login}}" minlength="5" maxlength="20" required>
+                                    {% if user.errors['specialCharactersInLogin'] is defined %}
+                                    <div style="color: red;">{{ user.errors['specialCharactersInLogin']}}</div>
+                                    {% endif %}
+                                    {% if user.errors['loginExists'] is defined %}
+                                    <div style="color: red;">{{ user.errors['loginExists']}}</div>
+                                    {% endif %}
                                 </div>
                                 <div class="col-10 my-2">
                                     <input type="email" class="form-control" name="email" placeholder="Enter email"
-                                        required>
+                                        value="{{user.email}}" required>
+                                    {% if user.errors['invalidEmailAddress'] is defined %}
+                                    <div style="color: red;">{{ user.errors['invalidEmailAddress']}}</div>
+                                    {% endif %}
+                                    {% if user.errors['emailAlreadyTaken'] is defined %}
+                                    <div style="color: red;">{{ user.errors['emailAlreadyTaken']}}</div>
+                                    {% endif %}
                                 </div>
-                                <div class="col-10 my-2">
+                                <div class=" col-10 my-2">
                                     <div class="password-wrapper">
                                         <input type="password" class="form-control" name="password" id="password"
                                             placeholder="Enter password" minlength="6" maxlength="20" required>
                                         <span><i id="toggler" class="icon-eye"></i>
+                                            {% if user.errors['atLeastOneLetterInPassword'] is defined %}
+                                            <div style="color: red;">{{ user.errors['atLeastOneLetterInPassword']}}
+                                            </div>
+                                            {% endif %}
+                                            {% if user.errors['specialCharactersInPassword'] is defined %}
+                                            <div style="color: red;">{{ user.errors['specialCharactersInPassword']}}
+                                            </div>
+                                            {% endif %}
+                                            {% if user.errors['atLeastOneNumberInPassword'] is defined %}
+                                            <div style="color: red;">{{ user.errors['atLeastOneNumberInPassword']}}
+                                            </div>
+                                            {% endif %}
                                     </div>
                                 </div>
                                 <div class="col-10 my-2">
                                     <input type="text" class="form-control" name="name" placeholder="Enter your name"
                                         required>
+                                    {% if user.errors['onlyLettersInName'] is defined %}
+                                    <div style="color: red;">{{ user.errors['onlyLettersInName']}}</div>
+                                    {% endif %}
                                 </div>
                                 <div class="col-10">
                                     <button type="submit" name="submit"

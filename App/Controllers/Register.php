@@ -26,7 +26,17 @@ class Register extends \Core\Controller
     public function createAction()
     {
         $user = new User($_POST);
-        $user->save();   
+
+        if ($user->save()) {
+            header('Location: http://' . $_SERVER['HTTP_HOST'] . '/Register/success', true, 303);
+            exit;
+        } else {
+            View::renderTemplate('Register/index.html', ['user' => $user]);
+        }
+    }
+
+    public function successAction()
+    {
         View::renderTemplate('Register/success.html');
     }
 }
