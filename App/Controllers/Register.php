@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use \Core\View;
+use App\Models\User;
 
 /**
  * Home controller
@@ -20,5 +21,12 @@ class Register extends \Core\Controller
     public function indexAction()
     {
         View::renderTemplate('Register/index.html');
+    }
+
+    public function createAction()
+    {
+        $user = new User($_POST);
+        $user->save();   
+        View::renderTemplate('Register/success.html');
     }
 }

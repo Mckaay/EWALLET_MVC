@@ -12,15 +12,29 @@ use PDO;
 class User extends \Core\Model
 {
 
-    /**
-     * Get all the users as an associative array
-     *
-     * @return array
-     */
-    public static function getAll()
+    public function __construct($data)
     {
+        foreach ($data as $key => $value) {
+            $this->$key = $value;
+        }
+    }
+
+    public function save()
+    {
+        $sql = 'INSERT INTO users VALUES
+        (NULL, :login, :password_hash, :email, :name)';
+
+        $password_hash = password_hash($this->password, PASSWORD_DEFAULT);
+
         $db = static::getDB();
-        $stmt = $db->query('SELECT id, name FROM users');
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt = $db->prepare($sql);
+
+        $stmt->bindValue(':login',$this->login,PDO::PARAM_STR);
+        $stmt->bindValue(':password_hash',$password_hash,PDO::PARAM_STR);
+        $stmt->bindValue(':email',$this->email,PDO::PARAM_STR);
+        $stmt->bindValue(':name',$this->name,PDO::PARAM_STR);
+
+        $stmt->execute();
+
     }
 }
