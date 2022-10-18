@@ -54,6 +54,9 @@ class User extends \Core\Model
         if (static::emailExists($this->email)) {
             $this->errors['emailAlreadyTaken'] = 'Email already taken!';
         }
+        if (static::usernameExists($this->login)) {
+            $this->errors['loginExists'] = 'Login already taken!';
+        }
         if (strlen($this->password) < 6) {
             $this->errors['lengthPasswordError'] = 'Password need at least 6 characters';
         }
@@ -86,5 +89,17 @@ class User extends \Core\Model
 
         return $stmt->fetch() !== false;
     }
+
+    public static function usernameExists($username){
+        $sql = 'SELECT * FROM users WHERE username = :username';
+
+        $db = static::getDB();
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(':username', $username, PDO::PARAM_STR);
+        $stmt->execute();
+
+        return $stmt->fetch() !== false;
+    }
+
 
 }
