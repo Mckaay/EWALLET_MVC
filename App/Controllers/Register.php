@@ -9,7 +9,7 @@ use \Core\View;
  *
  * PHP version 7.0
  */
-class Home extends \Core\Controller
+class Register extends \Core\Controller
 {
 
     /**
@@ -19,6 +19,6 @@ class Home extends \Core\Controller
      */
     public function indexAction()
     {
-        View::renderTemplate('Home/index.html');
+        View::renderTemplate('Register/index.html');
     }
 }
