@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+
+{% block title %}Register{% endblock %}
+
+{% block footer %}
+
+<script>
+
+    $.validator.addMethod('validPassword',
+        function (value, element, param) {
+            if (value != '') {
+
+                if (value.match(/.*[a-z]+.*/i) == null) {
+                    return false;
+                }
+                if (value.match(/.*\d+.*/i) == null) {
+                    return false;
+                }
+                if (/^[a-zA-Z0-9- ]*$/.test(value) == false) {
+                    return false;
+                }
+            }
+            return true;
+        },
+        'Must contain at least one letter and one number'
+    );
+
+    $.validator.addMethod('validName',
+        function (value, element, param) {
+            if (value != '') {
+
+                if (value.match(/.*[a-z]+.*/i) == null) {
+                    return false;
+                }
+                if (value.match(/.*\d+.*/i) != null) {
+                    return false;
+                }
+                if (/^[a-zA-Z0-9- ]*$/.test(value) == false) {
+                    return false;
+                }
+            }
+            return true;
+        },
+        'Name can only consist of letters!'
+    );
+
+
+
+
+    $(document).ready(function () {
+
+        $('#formSignup').validate({
+            rules: {
+                name: {
+                    required: true,
+                    minlength: 3,
+                    validName: true
+                },
+                email: {
+                    required: true,
+                    email: true,
+                    remote: '/account/validate-email'
+                },
+                password: {
+                    required: true,
+                    minlength: 6,
+                    validPassword: true
+                },
+                login: {
+                    required: true,
+                    minlength: 5,
+                    remote: '/account/validate-username'
+                }
+            },
+            messages: {
+                email: {
+                    remote: 'Email already taken!'
+                },
+                login: {
+                    remote: 'Login already taken!'
+                }
+            }
+        });
+    });
+
+</script>
+
+{% endblock %}
+
+
+{% block body %}
+<main>
+    <section class="main-section">
+        <div class="container">
+            <div class="row text-center justify-content-center align-items-center">
+                <div class="col-12 col-md-6 ">
+                    <div class="left-side-wrap">
+                        <header>
+                            <div class="logo">
+                                <h1>E-WALLET</h1>
+                            </div>
+                            <h5>Simple way to manage personal finances.</h5>
+                            <h5>Track your expenses and incomes.</h5>
+                            <h5>View period time summaries.</h5>
+                        </header>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6">
+                    <div class="form">
+                        <form action="/register/create" method="post" class="p-4 bg-white rounded" id="formSignup"
+                            style="max-width: 70%;">
+                            <div class="row text-center justify-content-center align-items-center">
+                                <div class="col-10 my-2">
+                                    <input type="text" class="form-control" name="login" placeholder="Enter login"
+                                        value="{{user.login}}" minlength="5" maxlength="20" required>
+                                    {% if user.errors['specialCharactersInLogin'] is defined %}
+                                    <div style="color: red;">{{ user.errors['specialCharactersInLogin']}}</div>
+                                    {% endif %}
+                                    {% if user.errors['loginExists'] is defined %}
+                                    <div style="color: red;">{{ user.errors['loginExists']}}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-10 my-2">
+                                    <input type="email" class="form-control" name="email" placeholder="Enter email"
+                                        value="{{user.email}}" required>
+                                    {% if user.errors['invalidEmailAddress'] is defined %}
+                                    <div style="color: red;">{{ user.errors['invalidEmailAddress']}}</div>
+                                    {% endif %}
+                                    {% if user.errors['emailAlreadyTaken'] is defined %}
+                                    <div style="color: red;">{{ user.errors['emailAlreadyTaken']}}</div>
+                                    {% endif %}
+                                </div>
+                                <div class=" col-10 my-2">
+                                    <div class="password-wrapper">
+                                        <input type="password" class="form-control" name="password" id="password"
+                                            placeholder="Enter password" minlength="6" maxlength="20" required>
+                                        <span><i id="toggler" class="icon-eye"></i>
+                                            {% if user.errors['atLeastOneLetterInPassword'] is defined %}
+                                            <div style="color: red;">{{ user.errors['atLeastOneLetterInPassword']}}
+                                            </div>
+                                            {% endif %}
+                                            {% if user.errors['specialCharactersInPassword'] is defined %}
+                                            <div style="color: red;">{{ user.errors['specialCharactersInPassword']}}
+                                            </div>
+                                            {% endif %}
+                                            {% if user.errors['atLeastOneNumberInPassword'] is defined %}
+                                            <div style="color: red;">{{ user.errors['atLeastOneNumberInPassword']}}
+                                            </div>
+                                            {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-10 my-2">
+                                    <input type="text" class="form-control" name="name" placeholder="Enter your name"
+                                        required>
+                                    {% if user.errors['onlyLettersInName'] is defined %}
+                                    <div style="color: red;">{{ user.errors['onlyLettersInName']}}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-10">
+                                    <button type="submit" name="submit"
+                                        class="col-12 btn btn-primary btn-block my-2">Register</button>
+                                </div>
+                                <p class="my-4 border-bottom">Already have an account?</p>
+                                <div class="col-10">
+                                    <a href="index.php"><button type="button" class="col-10 btn btn-primary">Sign
+                                            In</button></a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer>
+    <div class="row text-center m-0">
+        <div class="col-12 col-md-3">
+            <i class="icon-ok-circled2"></i>
+            <h6>Manage finances</h6>
+        </div>
+        <div class="col-12 col-md-3">
+            <i class="icon-ok-circled2"></i>
+            <h6>Save money</h6>
+        </div>
+        <div class="col-12 col-md-3">
+            <i class="icon-ok-circled2"></i>
+            <h6>Track expenses</h6>
+        </div>
+        <div class="col-12 col-md-3">
+            <i class="icon-ok-circled2"></i>
+            <h6>Track incomes</h6>
+        </div>
+    </div>
+</footer>
+{% endblock %}
