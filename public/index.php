@@ -26,7 +26,9 @@ set_exception_handler('Core\Error::exceptionHandler');
 $router = new Core\Router();
 
 // Add the routes
-$router->add('', ['controller' => 'Register', 'action' => 'index']);
+$router->add('', ['controller' => 'Login', 'action' => 'index']);
 $router->add('{controller}/{action}');
+$router->add('login', ['controller' => 'Login', 'action' => 'index']);
+$router->add('register', ['controller' => 'Register', 'action' => 'index']);
     
 $router->dispatch($_SERVER['QUERY_STRING']);
