@@ -34,6 +34,12 @@
                   </div>
                 </div>
                 <div class="col-10">
+                  <label for="remember_me">
+                    Remember me
+                    <input type="checkbox" id = "remember_me" name ="remember_me" {% if remember_me %} checked = "checked" {% endif %}>
+                  </label>
+                </div>
+                <div class="col-10">
                   <button type="submit" name = "submit" class="col-12 btn btn-primary btn-block my-2">Log In</button>
                 </div>
                 <div class="col-10 my-3">
