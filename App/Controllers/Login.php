@@ -9,7 +9,7 @@ use \App\Auth;
 class Login extends \Core\Controller
 {
     public function indexAction()
-    {
+    {       
         View::renderTemplate('Login/login.html');
     }
 
