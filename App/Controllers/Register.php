@@ -28,8 +28,7 @@ class Register extends \Core\Controller
         $user = new User($_POST);
 
         if ($user->save()) {
-            header('Location: http://' . $_SERVER['HTTP_HOST'] . '/Register/success', true, 303);
-            exit;
+            $this->redirect('/Register/success');
         } else {
             View::renderTemplate('Register/index.html', ['user' => $user]);
         }
