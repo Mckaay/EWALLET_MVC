@@ -38,10 +38,8 @@ class Auth
 
   public static function getUser()
   {
-
     if (isset($_SESSION['user_id'])) {
       return User::findById($_SESSION['user_id']);
     }
-
   }
 }
