@@ -3,11 +3,12 @@
 namespace App\Controllers;
 
 use \Core\View;
+use \App\Auth;
 
-class Menu extends \Core\Controller
+class Menu extends Authenticated
 {
     public function indexAction()
     {
-        View::renderTemplate('Menu/menu.html');
+        View::renderTemplate('menu/menu.html');
     }
 }
