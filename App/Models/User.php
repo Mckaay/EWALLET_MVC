@@ -14,7 +14,7 @@ class User extends \Core\Model
 
     public $errors = [];
 
-    public function __construct($data)
+    public function __construct($data = [])
     {
         foreach ($data as $key => $value) {
             $this->$key = $value;
@@ -26,7 +26,7 @@ class User extends \Core\Model
 
         $this->validate();
 
-        if(empty($this->errors)){
+        if (empty($this->errors)) {
             $password_hash = password_hash($this->password, PASSWORD_DEFAULT);
 
             $sql = 'INSERT INTO users VALUES
@@ -34,13 +34,13 @@ class User extends \Core\Model
 
             $db = static::getDB();
             $stmt = $db->prepare($sql);
-            
-    
-            $stmt->bindValue(':login',$this->login,PDO::PARAM_STR);
-            $stmt->bindValue(':password_hash',$password_hash,PDO::PARAM_STR);
-            $stmt->bindValue(':email',$this->email,PDO::PARAM_STR);
-            $stmt->bindValue(':name',$this->name,PDO::PARAM_STR);
-    
+
+
+            $stmt->bindValue(':login', $this->login, PDO::PARAM_STR);
+            $stmt->bindValue(':password_hash', $password_hash, PDO::PARAM_STR);
+            $stmt->bindValue(':email', $this->email, PDO::PARAM_STR);
+            $stmt->bindValue(':name', $this->name, PDO::PARAM_STR);
+
             return $stmt->execute();
         }
         return false;
@@ -90,16 +90,32 @@ class User extends \Core\Model
         return $stmt->fetch() !== false;
     }
 
-    public static function usernameExists($username){
+    public static function usernameExists($username)
+    {
+        return static::findByUsername($username);
+    }
+
+    public static function findByUsername($username)
+    {
         $sql = 'SELECT * FROM users WHERE username = :username';
 
         $db = static::getDB();
         $stmt = $db->prepare($sql);
         $stmt->bindParam(':username', $username, PDO::PARAM_STR);
+        $stmt->setFetchMode(PDO::FETCH_CLASS, get_called_class());
         $stmt->execute();
 
-        return $stmt->fetch() !== false;
+        return $stmt->fetch();
     }
 
-
+    public static function authenticate($username, $password)
+    {
+        $user = static::findByUsername($username);
+        if ($user) {
+            if(password_verify($password, $user->password)){
+                return $user;
+            }
+        }
+        return false;
+    }
 }
