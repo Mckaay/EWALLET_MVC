@@ -25,11 +25,10 @@ class Password extends \Core\Controller
   public function resetAction()
   {
     $token = $this->route_params['token'];
-    
+
     $user = $this->getUserOrExit($token);
 
     View::renderTemplate('Password/reset.html', ['token' => $token]);
-
   }
 
   public function resetPasswordAction()
@@ -38,8 +37,16 @@ class Password extends \Core\Controller
 
     $user = $this->getUserOrExit($token);
 
-    echo "reset user's password here";
+    if ($user->resetPassword($_POST['password'])) {
 
+      View::renderTemplate('Password/resetsuccess.html');
+    }
+    else {
+      View::renderTemplate('Password/reset.html',[
+        'token' => $token,
+        'user' => $user
+      ]);
+    }
   }
 
   protected function getUserOrExit($token)
@@ -50,6 +57,7 @@ class Password extends \Core\Controller
       return $user;
     } else {
       View::renderTemplate('Password/tokenexpired.html');
+      exit;
     }
   }
 }

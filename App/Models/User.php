@@ -52,13 +52,14 @@ class User extends \Core\Model
 
     public function validate()
     {
+
         if (filter_var($this->email, FILTER_VALIDATE_EMAIL) === false) {
             $this->errors['invalidEmailAddress'] = 'Invalid email address!';
         }
-        if (static::emailExists($this->email)) {
+        if (static::emailExists($this->email, $this->id ?? null)) {
             $this->errors['emailAlreadyTaken'] = 'Email already taken!';
         }
-        if (static::usernameExists($this->login)) {
+        if (static::usernameExists($this->login, $this->id ?? null)) {
             $this->errors['loginExists'] = 'Login already taken!';
         }
         if (strlen($this->password) < 6) {
@@ -81,27 +82,36 @@ class User extends \Core\Model
         }
     }
 
-    public static function emailExists($email)
+    public static function emailExists($email, $ignore_id = null)
     {
-        $sql = 'SELECT * FROM users WHERE email = :email';
 
-        $db = static::getDB();
-        $stmt = $db->prepare($sql);
-        $stmt->bindParam(':email', $email, PDO::PARAM_STR);
+        $user = static::findByEmail($email);
 
-        $stmt->execute();
+        if ($user) {
+            if ($user->id != $ignore_id) {
+                return true;
+            }
+        }
 
-        return $stmt->fetch() !== false;
+        return false;
     }
 
-    public static function usernameExists($username)
+    public static function usernameExists($username, $ignore_id = null)
     {
-        return static::findByUsername($username);
+        $user = static::findByUsername($username);
+
+        if ($user) {
+            if ($user->id != $ignore_id) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public static function findByUsername($username)
     {
-        $sql = 'SELECT * FROM users WHERE username = :username';
+        $sql = 'SELECT * FROM users WHERE login = :username';
 
         $db = static::getDB();
         $stmt = $db->prepare($sql);
@@ -177,11 +187,14 @@ class User extends \Core\Model
 
     public static function sendPasswordReset($email)
     {
-
         $user = static::findByEmail($email);
 
-        if ($user->startPasswordReset()) {
-            $user->sendPasswordResetEmail();
+        if ($user) {
+
+            if ($user->startPasswordReset()) {
+
+                $user->sendPasswordResetEmail();
+            }
         }
     }
 
@@ -250,5 +263,27 @@ class User extends \Core\Model
         $this->password = $password;
 
         $this->validate();
+
+        if (empty($this->errors)) {
+
+            $password_hash = password_hash($password, PASSWORD_DEFAULT);
+
+            $sql = 'UPDATE users
+                    SET password = :password_hash,
+                        password_reset_hash = NULL,
+                        password_reset_expiry = NULL
+                    WHERE id = :id';
+
+            $db = static::getDB();
+
+            $stmt = $db->prepare($sql);
+
+            $stmt->bindValue(':id', $this->id, PDO::PARAM_INT);
+            $stmt->bindValue(':password_hash', $password_hash, PDO::PARAM_STR);
+
+            return $stmt->execute();
+        }
+
+        return false;
     }
 }
