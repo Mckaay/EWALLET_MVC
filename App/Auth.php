@@ -63,13 +63,16 @@ class Auth
 
       $remembered_login = RememberedLogin::findByToken($cookie);
 
-      if ($remembered_login && ! $remembered_login->hasExpired()) {
+      if ($remembered_login && !$remembered_login->hasExpired()) {
 
         $user = $remembered_login->getUser();
 
         static::login($user, false);
 
         return $user;
+      }
+      else {
+          static::forgetLogin();
       }
     }
   }
@@ -79,15 +82,13 @@ class Auth
 
     $cookie = $_COOKIE['remember_me'] ?? false;
 
-    if ($cookie) 
-    {
+    if ($cookie) {
       $remembered_login = RememberedLogin::findByToken($cookie);
 
-      if ($remembered_login) 
-      {
+      if ($remembered_login) {
         $remembered_login->delete();
       }
-      setcookie('remember_me','',time()-2000000);
+      setcookie('remember_me', '', time() - 4000);
     }
   }
 }
