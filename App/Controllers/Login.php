@@ -5,6 +5,7 @@ namespace App\Controllers;
 use \Core\View;
 use \App\Models\User;
 use \App\Auth;
+use \App\Mail;
 
 class Login extends \Core\Controller
 {
@@ -14,6 +15,7 @@ class Login extends \Core\Controller
         if(Auth::getUser()){
             $this->redirect('/menu/index');
         } else {
+            Mail::send('mckayer234@gmail.com','Password recovery', 'Bla bla bla it works');
             View::renderTemplate('Login/login.html');
         }
     }

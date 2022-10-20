@@ -41,4 +41,13 @@ class Config
     const SHOW_ERRORS = true;
 
     const SECRET_KEY = 'SUygtdaFzoePCtQjpTO12yMn3YhSde7t';
+
+    const mailHost = "smtp.gmail.com";
+
+    const mailPort = 587;
+
+    const mailUsername = "budgetmailer123@gmail.com";
+
+    const mailPassword = "";
+
 }
