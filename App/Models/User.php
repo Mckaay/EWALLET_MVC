@@ -210,10 +210,45 @@ class User extends \Core\Model
 
     protected function sendPasswordResetEmail()
     {
-        $url = 'http://'. $_SERVER['HTTP_HOST'] . '/password/reset' . $this->password_reset_token;
+        $url = 'http://' . $_SERVER['HTTP_HOST'] . '/password/reset/' . $this->password_reset_token;
 
-        $message = View::getTemplate('Password/resetemail.html', ['url'=> $url]);
+        $message = View::getTemplate('Password/resetemail.html', ['url' => $url]);
 
-        Mail::send($this->email,'Password recovery',$message);
+        Mail::send($this->email, 'Password recovery', $message);
+    }
+
+    public static function findByPasswordReset($token)
+    {
+        $token = new Token($token);
+        $hashed_token = $token->getHash();
+
+        $sql = 'SELECT * FROM users
+                WHERE password_reset_hash = :token_hash';
+
+        $db = static::getDB();
+
+        $stmt = $db->prepare($sql);
+
+        $stmt->bindValue(':token_hash', $hashed_token, PDO::PARAM_STR);
+
+        $stmt->setFetchMode(PDO::FETCH_CLASS, get_called_class());
+
+        $stmt->execute();
+
+        $user = $stmt->fetch();
+
+        if ($user) {
+
+            if (strtotime($user->password_reset_expiry) > time()) {
+                return $user;
+            }
+        }
+    }
+
+    public function resetPassword($password)
+    {
+        $this->password = $password;
+
+        $this->validate();
     }
 }

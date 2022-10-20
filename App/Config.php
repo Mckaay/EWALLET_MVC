@@ -48,6 +48,6 @@ class Config
 
     const mailUsername = "budgetmailer123@gmail.com";
 
-    const mailPassword = "";
+    const mailPassword = "eghiszfvfqmajqha";
 
 }
