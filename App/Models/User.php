@@ -5,6 +5,8 @@ namespace App\Models;
 use PDO;
 use App\Token;
 use App\Mail;
+use \Core\View;
+
 
 /**
  * Example user model
@@ -210,7 +212,7 @@ class User extends \Core\Model
     {
         $url = 'http://'. $_SERVER['HTTP_HOST'] . '/password/reset' . $this->password_reset_token;
 
-        $message = "Please click <a href=\"$url\">here</a> to reset your password.";
+        $message = View::getTemplate('Password/resetemail.html', ['url'=> $url]);
 
         Mail::send($this->email,'Password recovery',$message);
     }

@@ -41,6 +41,11 @@ class View
      */
     public static function renderTemplate($template, $args = [])
     {
+        echo static::getTemplate($template,$args);
+    }
+
+    public static function getTemplate($template, $args = [])
+    {
         static $twig = null;
 
         if ($twig === null) {
@@ -48,6 +53,6 @@ class View
             $twig = new \Twig\Environment($loader);
             $twig->addGlobal('current_user',\App\Auth::getUser());
         }
-        echo $twig->render($template, $args);
+        return $twig->render($template, $args);
     }
 }
