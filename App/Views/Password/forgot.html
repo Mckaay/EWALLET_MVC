@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Login{% endblock %}
+{% block title %}Password Recovery{% endblock %}
 
 {% block body %}
 
@@ -22,31 +22,19 @@
         </div>
         <div class="col-12 col-md-6">
           <div class="form">
-            <form  action = "/login/create" class="p-4 bg-white rounded" style="max-width: 70%;" method ="post">
+            <form  action = "/password/request-reset" class="p-4 bg-white rounded" style="max-width: 70%;" method ="post">
               <div class="row text-center justify-content-center align-items-center">
-                <div class="col-10 my-2">
-                  <input type="text" class="form-control" id="login" placeholder="Enter login" name = "login" value = "{{ login}}" required>
-                </div>
-                <div class="col-10 my-2">
-                  <div class="password-wrapper">
-                    <input type="password" class="form-control" id="password" name = "password" placeholder="Enter password" required >
-                    <span><i id="toggler" class="icon-eye"></i>
-                  </div>
-                </div>
-                <div class="col-10">
-                  <label for="remember_me">
-                    Remember me
-                    <input type="checkbox" id = "remember_me" name ="remember_me" {% if remember_me %} checked = "checked" {% endif %}>
-                  </label>
-                </div>
-                <div class="col-10">
-                  <button type="submit" name = "submit" class="col-12 btn btn-primary btn-block my-2">Log In</button>
-                </div>
                 <div class="col-10 my-3">
-                  <button type="button" class="btn btn-link border-bottom"><a href="/password/forgot">Forgot
-                      password?</a></button>
+                  <h5>Password recovery</h5>
                 </div>
-                <p class="my-2">Don't have an account?</p>
+                <div class="col-10 my-2">
+                  <input type="email" class="form-control" name="email" placeholder="Enter email"
+                      value="{{user.email}}" required>
+              </div>
+                <div class="col-10 my-3">
+                  <button type="submit" name = "submit" class="col-12 btn btn-primary btn-block my-2">Send request</button>
+                </div>
+                <p class="my-3">Don't have an account?</p>
                 <div class="col-10">
                   <a href="/register"><button type="button" class="col-10 btn btn-primary">Create
                       Account</button></a>
@@ -81,5 +69,6 @@
   </div>
 </footer>
 
+    
 
 {% endblock %}

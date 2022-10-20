@@ -113,7 +113,7 @@ class User extends \Core\Model
     {
         $user = static::findByUsername($username);
         if ($user) {
-            if(password_verify($password, $user->password)){
+            if (password_verify($password, $user->password)) {
                 return $user;
             }
         }
@@ -133,7 +133,23 @@ class User extends \Core\Model
         return $stmt->fetch();
     }
 
-    public function rememberLogin(){
+    public static function findByEmail($email)
+    {
+        $sql = 'SELECT * FROM users WHERE email = :email';
+
+        $db = static::getDB();
+        $stmt = $db->prepare($sql);
+        $stmt->bindValue(':email', $email, PDO::PARAM_STR);
+
+        $stmt->setFetchMode(PDO::FETCH_CLASS, get_called_class());
+
+        $stmt->execute();
+
+        return $stmt->fetch();
+    }
+
+    public function rememberLogin()
+    {
 
         $token = new Token();
         $hashed_token = $token->getHash();
@@ -149,10 +165,42 @@ class User extends \Core\Model
 
         $stmt = $db->prepare($sql);
 
-        $stmt->bindValue(':token_hash',$hashed_token,PDO::PARAM_STR);
-        $stmt->bindValue(':user_id',$this->id,PDO::PARAM_INT);
-        $stmt->bindValue(':expires_at',date('Y-m-d H:i:s',$this->expire_timestamp),PDO::PARAM_STR);
+        $stmt->bindValue(':token_hash', $hashed_token, PDO::PARAM_STR);
+        $stmt->bindValue(':user_id', $this->id, PDO::PARAM_INT);
+        $stmt->bindValue(':expires_at', date('Y-m-d H:i:s', $this->expire_timestamp), PDO::PARAM_STR);
 
         return $stmt->execute();
+    }
+
+    public static function sendPasswordReset($email)
+    {
+
+        $user = static::findByEmail($email);
+
+        if ($user->startPasswordReset()) {
+
+        }
+    }
+
+    protected function startPasswordReset()
+    {
+        $token = new Token();
+        $hashed_token = $token->getHash();
+        $expire_timestamp = time() + 60 * 60 * 2;
+
+        $sql = 'Update users
+            SET password_reset_hash = :token_hash,
+            password_reset_expiry = :expires_at
+            WHERE id = :id';
+        
+        $db = static::getDB();
+        $stmt = $db->prepare($sql);
+
+        $stmt->bindValue(':token_hash', $hashed_token, PDO::PARAM_STR);
+        $stmt->bindValue(':expires_at', date('Y-m-d H:i:s',$expire_timestamp), PDO::PARAM_STR);
+        $stmt->bindValue(':id', $this->id, PDO::PARAM_INT);
+
+        return $stmt->execute();
+        
     }
 }

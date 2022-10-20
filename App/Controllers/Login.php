@@ -15,7 +15,6 @@ class Login extends \Core\Controller
         if(Auth::getUser()){
             $this->redirect('/menu/index');
         } else {
-            Mail::send('mckayer234@gmail.com','Password recovery', 'Bla bla bla it works');
             View::renderTemplate('Login/login.html');
         }
     }
