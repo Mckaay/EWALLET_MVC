@@ -4,6 +4,7 @@ namespace App\Models;
 
 use PDO;
 use App\Token;
+use App\Mail;
 
 /**
  * Example user model
@@ -178,7 +179,7 @@ class User extends \Core\Model
         $user = static::findByEmail($email);
 
         if ($user->startPasswordReset()) {
-
+            $user->sendPasswordResetEmail();
         }
     }
 
@@ -186,21 +187,31 @@ class User extends \Core\Model
     {
         $token = new Token();
         $hashed_token = $token->getHash();
+        $this->password_reset_token = $token->getValue();
+
         $expire_timestamp = time() + 60 * 60 * 2;
 
         $sql = 'Update users
             SET password_reset_hash = :token_hash,
             password_reset_expiry = :expires_at
             WHERE id = :id';
-        
+
         $db = static::getDB();
         $stmt = $db->prepare($sql);
 
         $stmt->bindValue(':token_hash', $hashed_token, PDO::PARAM_STR);
-        $stmt->bindValue(':expires_at', date('Y-m-d H:i:s',$expire_timestamp), PDO::PARAM_STR);
+        $stmt->bindValue(':expires_at', date('Y-m-d H:i:s', $expire_timestamp), PDO::PARAM_STR);
         $stmt->bindValue(':id', $this->id, PDO::PARAM_INT);
 
         return $stmt->execute();
-        
+    }
+
+    protected function sendPasswordResetEmail()
+    {
+        $url = 'http://'. $_SERVER['HTTP_HOST'] . '/password/reset' . $this->password_reset_token;
+
+        $message = "Please click <a href=\"$url\">here</a> to reset your password.";
+
+        Mail::send($this->email,'Password recovery',$message);
     }
 }

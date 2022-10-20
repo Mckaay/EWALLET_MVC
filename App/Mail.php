@@ -25,6 +25,7 @@ class Mail
 
     $mail->Subject = $subject;
     $mail->Body = $message;
+    $mail->isHTML(true);
 
     $mail->send();
 
