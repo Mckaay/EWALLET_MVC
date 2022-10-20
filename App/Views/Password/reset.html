@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Reset password{% endblock %}
+
+{% block footer %}
+
+<script src = "/js/app.js"></script>
+
+<script>
+
+  $(document).ready(function () {
+
+    $('#formReset').validate({
+      rules: {
+        password: {
+          required: true,
+          minlength: 6,
+          validPassword: true
+        }
+      }
+    });
+  });
+
+</script>
+
+{% endblock %}
+
+
+{% block body %}
+<main>
+  <section class="main-section">
+    <div class="container">
+      <div class="row text-center justify-content-center align-items-center">
+        <div class="col-12 col-md-6 ">
+          <div class="left-side-wrap">
+            <header>
+              <div class="logo">
+                <h1>E-WALLET</h1>
+              </div>
+              <h5>Simple way to manage personal finances.</h5>
+              <h5>Track your expenses and incomes.</h5>
+              <h5>View period time summaries.</h5>
+            </header>
+          </div>
+        </div>
+        <div class="col-12 col-md-6">
+          <div class="form">
+            <form action="/password/reset-password" method="post" class="p-4 bg-white rounded" id="formReset"
+              style="max-width: 70%;">
+              <div class="row text-center justify-content-center align-items-center">
+                <div class="col-10 my-3">
+                  <h5>Reset password</h5>
+                </div>
+                <div class="col-10 my-3">
+                  <input type="hidden" name = "token" value = "{{ token }}">
+                </div>
+                <div class=" col-10 my-2">
+                  <div class="password-wrapper">
+                    <input type="password" class="form-control" name="password" id="password"
+                      placeholder="Enter password" minlength="6" maxlength="20" required>
+                    <span><i id="toggler" class="icon-eye"></i>
+                      {% if user.errors['atLeastOneLetterInPassword'] is defined %}
+                      <div style="color: red;">{{ user.errors['atLeastOneLetterInPassword']}}
+                      </div>
+                      {% endif %}
+                      {% if user.errors['specialCharactersInPassword'] is defined %}
+                      <div style="color: red;">{{ user.errors['specialCharactersInPassword']}}
+                      </div>
+                      {% endif %}
+                      {% if user.errors['atLeastOneNumberInPassword'] is defined %}
+                      <div style="color: red;">{{ user.errors['atLeastOneNumberInPassword']}}
+                      </div>
+                      {% endif %}
+                  </div>
+                </div>
+                <div class="col-10">
+                  <button type="submit" name="submit" class="col-12 btn btn-primary btn-block my-2">Reset
+                    password</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="row text-center m-0">
+    <div class="col-12 col-md-3">
+      <i class="icon-ok-circled2"></i>
+      <h6>Manage finances</h6>
+    </div>
+    <div class="col-12 col-md-3">
+      <i class="icon-ok-circled2"></i>
+      <h6>Save money</h6>
+    </div>
+    <div class="col-12 col-md-3">
+      <i class="icon-ok-circled2"></i>
+      <h6>Track expenses</h6>
+    </div>
+    <div class="col-12 col-md-3">
+      <i class="icon-ok-circled2"></i>
+      <h6>Track incomes</h6>
+    </div>
+  </div>
+</footer>
+{% endblock %}

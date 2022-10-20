@@ -4,6 +4,9 @@ namespace App\Models;
 
 use PDO;
 use App\Token;
+use App\Mail;
+use \Core\View;
+
 
 /**
  * Example user model
@@ -49,13 +52,14 @@ class User extends \Core\Model
 
     public function validate()
     {
+
         if (filter_var($this->email, FILTER_VALIDATE_EMAIL) === false) {
             $this->errors['invalidEmailAddress'] = 'Invalid email address!';
         }
-        if (static::emailExists($this->email)) {
+        if (static::emailExists($this->email, $this->id ?? null)) {
             $this->errors['emailAlreadyTaken'] = 'Email already taken!';
         }
-        if (static::usernameExists($this->login)) {
+        if (static::usernameExists($this->login, $this->id ?? null)) {
             $this->errors['loginExists'] = 'Login already taken!';
         }
         if (strlen($this->password) < 6) {
@@ -78,27 +82,36 @@ class User extends \Core\Model
         }
     }
 
-    public static function emailExists($email)
+    public static function emailExists($email, $ignore_id = null)
     {
-        $sql = 'SELECT * FROM users WHERE email = :email';
 
-        $db = static::getDB();
-        $stmt = $db->prepare($sql);
-        $stmt->bindParam(':email', $email, PDO::PARAM_STR);
+        $user = static::findByEmail($email);
 
-        $stmt->execute();
+        if ($user) {
+            if ($user->id != $ignore_id) {
+                return true;
+            }
+        }
 
-        return $stmt->fetch() !== false;
+        return false;
     }
 
-    public static function usernameExists($username)
+    public static function usernameExists($username, $ignore_id = null)
     {
-        return static::findByUsername($username);
+        $user = static::findByUsername($username);
+
+        if ($user) {
+            if ($user->id != $ignore_id) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public static function findByUsername($username)
     {
-        $sql = 'SELECT * FROM users WHERE username = :username';
+        $sql = 'SELECT * FROM users WHERE login = :username';
 
         $db = static::getDB();
         $stmt = $db->prepare($sql);
@@ -113,7 +126,7 @@ class User extends \Core\Model
     {
         $user = static::findByUsername($username);
         if ($user) {
-            if(password_verify($password, $user->password)){
+            if (password_verify($password, $user->password)) {
                 return $user;
             }
         }
@@ -133,7 +146,23 @@ class User extends \Core\Model
         return $stmt->fetch();
     }
 
-    public function rememberLogin(){
+    public static function findByEmail($email)
+    {
+        $sql = 'SELECT * FROM users WHERE email = :email';
+
+        $db = static::getDB();
+        $stmt = $db->prepare($sql);
+        $stmt->bindValue(':email', $email, PDO::PARAM_STR);
+
+        $stmt->setFetchMode(PDO::FETCH_CLASS, get_called_class());
+
+        $stmt->execute();
+
+        return $stmt->fetch();
+    }
+
+    public function rememberLogin()
+    {
 
         $token = new Token();
         $hashed_token = $token->getHash();
@@ -149,10 +178,112 @@ class User extends \Core\Model
 
         $stmt = $db->prepare($sql);
 
-        $stmt->bindValue(':token_hash',$hashed_token,PDO::PARAM_STR);
-        $stmt->bindValue(':user_id',$this->id,PDO::PARAM_INT);
-        $stmt->bindValue(':expires_at',date('Y-m-d H:i:s',$this->expire_timestamp),PDO::PARAM_STR);
+        $stmt->bindValue(':token_hash', $hashed_token, PDO::PARAM_STR);
+        $stmt->bindValue(':user_id', $this->id, PDO::PARAM_INT);
+        $stmt->bindValue(':expires_at', date('Y-m-d H:i:s', $this->expire_timestamp), PDO::PARAM_STR);
 
         return $stmt->execute();
+    }
+
+    public static function sendPasswordReset($email)
+    {
+        $user = static::findByEmail($email);
+
+        if ($user) {
+
+            if ($user->startPasswordReset()) {
+
+                $user->sendPasswordResetEmail();
+            }
+        }
+    }
+
+    protected function startPasswordReset()
+    {
+        $token = new Token();
+        $hashed_token = $token->getHash();
+        $this->password_reset_token = $token->getValue();
+
+        $expire_timestamp = time() + 60 * 60 * 2;
+
+        $sql = 'Update users
+            SET password_reset_hash = :token_hash,
+            password_reset_expiry = :expires_at
+            WHERE id = :id';
+
+        $db = static::getDB();
+        $stmt = $db->prepare($sql);
+
+        $stmt->bindValue(':token_hash', $hashed_token, PDO::PARAM_STR);
+        $stmt->bindValue(':expires_at', date('Y-m-d H:i:s', $expire_timestamp), PDO::PARAM_STR);
+        $stmt->bindValue(':id', $this->id, PDO::PARAM_INT);
+
+        return $stmt->execute();
+    }
+
+    protected function sendPasswordResetEmail()
+    {
+        $url = 'http://' . $_SERVER['HTTP_HOST'] . '/password/reset/' . $this->password_reset_token;
+
+        $message = View::getTemplate('Password/resetemail.html', ['url' => $url]);
+
+        Mail::send($this->email, 'Password recovery', $message);
+    }
+
+    public static function findByPasswordReset($token)
+    {
+        $token = new Token($token);
+        $hashed_token = $token->getHash();
+
+        $sql = 'SELECT * FROM users
+                WHERE password_reset_hash = :token_hash';
+
+        $db = static::getDB();
+
+        $stmt = $db->prepare($sql);
+
+        $stmt->bindValue(':token_hash', $hashed_token, PDO::PARAM_STR);
+
+        $stmt->setFetchMode(PDO::FETCH_CLASS, get_called_class());
+
+        $stmt->execute();
+
+        $user = $stmt->fetch();
+
+        if ($user) {
+
+            if (strtotime($user->password_reset_expiry) > time()) {
+                return $user;
+            }
+        }
+    }
+
+    public function resetPassword($password)
+    {
+        $this->password = $password;
+
+        $this->validate();
+
+        if (empty($this->errors)) {
+
+            $password_hash = password_hash($password, PASSWORD_DEFAULT);
+
+            $sql = 'UPDATE users
+                    SET password = :password_hash,
+                        password_reset_hash = NULL,
+                        password_reset_expiry = NULL
+                    WHERE id = :id';
+
+            $db = static::getDB();
+
+            $stmt = $db->prepare($sql);
+
+            $stmt->bindValue(':id', $this->id, PDO::PARAM_INT);
+            $stmt->bindValue(':password_hash', $password_hash, PDO::PARAM_STR);
+
+            return $stmt->execute();
+        }
+
+        return false;
     }
 }
