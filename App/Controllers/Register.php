@@ -39,4 +39,16 @@ class Register extends \Core\Controller
     {
         View::renderTemplate('Register/success.html');
     }
+
+    public function activateAction()
+    {
+        User::activate($this->route_params['token']);
+
+        $this->redirect('/register/activated');
+    }
+
+    public function activatedAction()
+    {
+        View::renderTemplate('Register/activated.html');
+    }
 }

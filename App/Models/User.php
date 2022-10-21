@@ -34,7 +34,7 @@ class User extends \Core\Model
             $password_hash = password_hash($this->password, PASSWORD_DEFAULT);
 
             $token = new Token();
-            $hashed_token = $token ->getHash();
+            $hashed_token = $token->getHash();
             $this->activation_token = $token->getValue();
 
             $sql = 'INSERT INTO users (id, login, password, email, name, activation_hash) VALUES
@@ -130,7 +130,7 @@ class User extends \Core\Model
     public static function authenticate($username, $password)
     {
         $user = static::findByUsername($username);
-        if ($user) {
+        if ($user && $user->is_active) {
             if (password_verify($password, $user->password)) {
                 return $user;
             }
@@ -299,5 +299,23 @@ class User extends \Core\Model
         $message = View::getTemplate('Register/activationemail.html', ['url' => $url]);
 
         Mail::send($this->email, 'Activate account', $message);
+    }
+
+    public static function activate($value)
+    {
+        $token = new Token($value);
+        $hashed_token = $token->getHash();
+
+        $sql = 'UPDATE users
+                SET is_active = 1,
+                    activation_hash = null
+                WHERE activation_hash = :hashed_token';
+
+        $db = static::getDB();
+        $stmt = $db->prepare($sql);
+
+        $stmt->bindValue(':hashed_token',$hashed_token,PDO::PARAM_STR);
+
+        $stmt->execute();
     }
 }
