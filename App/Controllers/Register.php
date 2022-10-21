@@ -28,6 +28,7 @@ class Register extends \Core\Controller
         $user = new User($_POST);
 
         if ($user->save()) {
+            $user->sendActivationEmail();
             $this->redirect('/Register/success');
         } else {
             View::renderTemplate('Register/index.html', ['user' => $user]);
@@ -37,5 +38,17 @@ class Register extends \Core\Controller
     public function successAction()
     {
         View::renderTemplate('Register/success.html');
+    }
+
+    public function activateAction()
+    {
+        User::activate($this->route_params['token']);
+
+        $this->redirect('/register/activated');
+    }
+
+    public function activatedAction()
+    {
+        View::renderTemplate('Register/activated.html');
     }
 }
