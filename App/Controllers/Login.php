@@ -34,7 +34,8 @@ class Login extends \Core\Controller
                 $this->redirect('/Menu/index');
             } else {
                 Flash::addMessage('Login unsuccessful, please try again',Flash::DANGER);
-                View::renderTemplate('Login/login.html', ['login' => $_POST['login'], 'remember_me' => $remember_me]);
+                $error = 'Incorrect username or password!';
+                View::renderTemplate('Login/login.html', ['login' => $_POST['login'], 'remember_me' => $remember_me,'error' => $error]);
             }
         }
     }

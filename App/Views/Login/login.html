@@ -26,6 +26,9 @@
               <div class="row text-center justify-content-center align-items-center">
                 <div class="col-10 my-2">
                   <input type="text" class="form-control" id="login" placeholder="Enter login" name = "login" value = "{{ login}}" required>
+                  {% if error is defined %}
+                   <div class = "error"> {{ error }}</div>
+                  {% endif %}
                 </div>
                 <div class="col-10 my-2">
                   <div class="password-wrapper">
