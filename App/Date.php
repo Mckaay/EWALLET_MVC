@@ -6,22 +6,22 @@ class Date
 {
 
   public static function endMonthDate () {
-    $date = date("Y-m-t");
-    return $date;
+    return date("Y-m-t");
   }
   
   public static function startMonthDate () {
-    $date = date("Y-m-01");
-    return $date;
+    return date("Y-m-01");
   }
   
   public static function previousMonthStartDate () {
-    $date = date('Y-m-01', strtotime('-1 month'));
-    return $date;
+    return date('Y-m-01', strtotime('-1 month'));
   }
   
   public static function previousMonthEndDate () {
-    $date = date('Y-m-t', strtotime('-1 month'));
-    return $date;
+    return date('Y-m-t', strtotime('-1 month'));
+  }
+
+  public static function currentDate(){
+    return date('Y-m-d');
   }
 }
