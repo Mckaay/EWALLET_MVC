@@ -11,15 +11,14 @@
 </head>
 
 <body>
+
+    {% for message in flash_messages %}
+    <div class="{{ message.type }}" style="text-align:center;" role="alert">
+        {{ message.body }}
+    </div>
+    {% endfor %}
+
     {% block body %}
-
-
-
-
-
-
-
-
 
     {% endblock %}
     <script src="https://code.jquery.com/jquery-3.6.1.min.js"
@@ -38,7 +37,7 @@
     <script src="js/script.js"></script>
 
     {% block footer %}
-    {% endblock  %}
+    {% endblock %}
 
 </body>
 

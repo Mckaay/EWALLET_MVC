@@ -4,7 +4,7 @@
 
 {% block footer %}
 
-<script src = "/js/app.js"></script>
+<script src="/js/app.js"></script>
 
 <script>
 
@@ -27,8 +27,17 @@
         'Name can only consist of letters!'
     );
 
-
-
+    $.validator.addMethod('validLogin',
+        function (value, element, param) {
+            if (value != '') {
+                if (/^[a-zA-Z0-9- ]*$/.test(value) == false) {
+                    return false;
+                }
+            }
+            return true;
+        },
+        'Login can only consist of letters and numbers!'
+    );
 
     $(document).ready(function () {
 
@@ -52,8 +61,12 @@
                 login: {
                     required: true,
                     minlength: 5,
+                    validLogin: true,
                     remote: '/account/validate-username'
                 }
+            },
+            errorPlacement: function (error, element) {
+                error.insertAfter(element.parent());
             },
             messages: {
                 email: {

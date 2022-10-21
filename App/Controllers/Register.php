@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use \Core\View;
 use App\Models\User;
+use \App\Flash;
 
 /**
  * Home controller
@@ -23,32 +24,26 @@ class Register extends \Core\Controller
         View::renderTemplate('Register/index.html');
     }
 
+    
+
     public function createAction()
     {
         $user = new User($_POST);
 
         if ($user->save()) {
             $user->sendActivationEmail();
-            $this->redirect('/Register/success');
+            Flash::addMessage('User successfully registered! Please check email for activation link.',Flash::SUCCESS);
+            $this->redirect('/register/index');
         } else {
             View::renderTemplate('Register/index.html', ['user' => $user]);
         }
-    }
-
-    public function successAction()
-    {
-        View::renderTemplate('Register/success.html');
     }
 
     public function activateAction()
     {
         User::activate($this->route_params['token']);
 
-        $this->redirect('/register/activated');
-    }
-
-    public function activatedAction()
-    {
-        View::renderTemplate('Register/activated.html');
+        Flash::addMessage('User successfully activated! You can log in and use our website!',Flash::SUCCESS);
+        $this->redirect('/');
     }
 }

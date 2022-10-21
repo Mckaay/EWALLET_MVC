@@ -4,8 +4,8 @@ namespace App\Controllers;
 
 
 use \Core\View;
-
 use App\Models\User;
+use \App\Flash;
 
 class Password extends \Core\Controller
 {
@@ -19,7 +19,8 @@ class Password extends \Core\Controller
   {
     User::sendPasswordReset($_POST['email']);
 
-    View::renderTemplate('Password/requested.html');
+    Flash::addMessage('Request has been sent. Please check your email address.',Flash::INFO);
+    $this->redirect('/Password/forgot');
   }
 
   public function resetAction()
@@ -39,7 +40,8 @@ class Password extends \Core\Controller
 
     if ($user->resetPassword($_POST['password'])) {
 
-      View::renderTemplate('Password/resetsuccess.html');
+      Flash::addMessage('Password successfully changed! You can login with your new password.',Flash::SUCCESS);
+      $this->redirect('/');
     }
     else {
       View::renderTemplate('Password/reset.html',[
@@ -56,8 +58,8 @@ class Password extends \Core\Controller
     if ($user) {
       return $user;
     } else {
-      View::renderTemplate('Password/tokenexpired.html');
-      exit;
+      Flash::addMessage('Password reset link invalid or expired you need to request another one',Flash::DANGER);
+      $this->redirect('/Password/forgot');
     }
   }
 }
