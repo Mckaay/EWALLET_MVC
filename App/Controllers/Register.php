@@ -28,6 +28,7 @@ class Register extends \Core\Controller
         $user = new User($_POST);
 
         if ($user->save()) {
+            $user->sendActivationEmail();
             $this->redirect('/Register/success');
         } else {
             View::renderTemplate('Register/index.html', ['user' => $user]);
