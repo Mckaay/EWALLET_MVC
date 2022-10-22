@@ -50,9 +50,60 @@ class User extends \Core\Model
             $stmt->bindValue(':name', $this->name, PDO::PARAM_STR);
             $stmt->bindValue(':activation_hash', $hashed_token, PDO::PARAM_STR);
 
-            return $stmt->execute();
+            $stmt->execute();
+
+            $user = $this->findByEmail($this->email);
+
+            $user->insertDefaultExpensesCategories($user->id);
+            $user->insertDefaultIncomesCategories($user->id);
+            $user->insertDefaultPaymentMethods($user->id);
+
+            return true;
+
         }
         return false;
+    }
+
+    protected function insertDefaultIncomesCategories($id)
+    {
+        $sql = 'INSERT INTO incomes_category_assigned_to_users
+         SELECT NULL,:user_id,name 
+         FROM incomes_category_default';
+
+        $db = static::getDB();
+        $stmt = $db->prepare($sql);
+
+        $stmt->bindValue(':user_id',$id,PDO::PARAM_INT);
+
+        $stmt->execute();
+    }
+
+    protected function insertDefaultPaymentMethods($id)
+    {
+        $sql = 'INSERT INTO payment_methods_assigned_to_users 
+         SELECT NULL,:user_id,name 
+         FROM payment_methods_default';
+
+        $db = static::getDB();
+        $stmt = $db->prepare($sql);
+
+        $stmt->bindValue(':user_id',$id,PDO::PARAM_INT);
+        
+        $stmt->execute();
+    }
+
+    protected function insertDefaultExpensesCategories($id)
+    {
+        $sql = 'INSERT INTO expenses_category_assigned_to_users
+         SELECT NULL,:user_id,name 
+         FROM expenses_category_default';
+
+        $db = static::getDB();
+        $stmt = $db->prepare($sql);
+
+        $stmt->bindValue(':user_id',$id,PDO::PARAM_INT);
+        
+        $stmt->execute();
     }
 
     public function validate()
@@ -314,8 +365,9 @@ class User extends \Core\Model
         $db = static::getDB();
         $stmt = $db->prepare($sql);
 
-        $stmt->bindValue(':hashed_token',$hashed_token,PDO::PARAM_STR);
+        $stmt->bindValue(':hashed_token', $hashed_token, PDO::PARAM_STR);
 
         $stmt->execute();
+
     }
 }
