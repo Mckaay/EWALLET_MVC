@@ -5,6 +5,8 @@ namespace App;
 class Date
 {
 
+  const minDate = '2000-01-01';
+
   public static function endMonthDate () {
     return date("Y-m-t");
   }
