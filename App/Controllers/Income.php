@@ -15,7 +15,8 @@ class Income extends Authenticated
 
   public function indexAction()
   {
-
-    View::renderTemplate('Income/income.html',['maxDate' => Date::currentDate()]);
+    View::renderTemplate('Income/income.html',['maxDate' => Date::currentDate(),
+    'incomeCategories' => \App\Models\Income::getIncomeCategories()
+  ]);
   }
 }

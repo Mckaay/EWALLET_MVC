@@ -49,11 +49,15 @@
           </div>
           <div class="col-12 col-sm-10  col-md-7 my-2">
             <label for="date">Date</label>
-            <input type="date" class="form-control" name="date" id="date" min="2000-01-01" value = "{{ maxDate }}" max = "{{ maxDate }}" required>
+            <input type="date" class="form-control" name="date" id="date" min="2000-01-01" value="{{ maxDate }}"
+              max="{{ maxDate }}" required>
           </div>
           <div class="col-12 col-sm-10 col-md-7  my-2">
             <label for="category">Category</label>
             <select class="form-select" aria-label="Default select example" name="category" id="category" required>
+              {% for income in incomeCategories %}
+              <option value = "{{ income.id }}">{{ income.name }}</option>
+              {% endfor %}
             </select>
           </div>
           <div class="col-12 col-sm-10  col-md-7 my-2">
