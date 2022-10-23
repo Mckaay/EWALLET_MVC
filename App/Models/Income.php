@@ -10,7 +10,7 @@ use \App\Date;
 class Income extends \Core\Model
 {
 
-  protected $errors = [];
+  public $errors = [];
 
   public function __construct($data = [])
   {

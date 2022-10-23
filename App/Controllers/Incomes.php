@@ -25,18 +25,25 @@ class Incomes extends Authenticated
 
   public function newAction()
   {
-  
+
     if (isset($_POST['amount'])) {
       $income = new Income($_POST);
-      
-      if($income->saveIncome()){
-        Flash::addMessage('Income successfully added!');
+
+      if ($income->saveIncome()) {
+        Flash::addMessage('Income successfully added!', FLASH::SUCCESS);
         $this->redirect('/incomes/index');
-      }
-      else {
+      } else {
+        Flash::addMessage('Income was not added!', FLASH::DANGER);
+
+        View::renderTemplate('Income/income.html', [
+          'income' => $income,
+          'maxDate' => Date::currentDate(),
+          'incomeCategories' => Income::getIncomeCategories()
+        ]);
 
       }
-
+    } else {
+      $this->redirect('/incomes/index');
     }
   }
 }
