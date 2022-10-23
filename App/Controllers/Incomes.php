@@ -10,7 +10,7 @@ use \App\Flash;
 class Incomes extends Authenticated
 {
 
-  protected function before()
+  protected function before() 
   {
     parent::before();
   }
