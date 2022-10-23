@@ -7,7 +7,7 @@ use \App\Date;
 use \App\Models\Expense;
 use \App\Flash;
 
-class Incomes extends Authenticated
+class Expenses extends Authenticated
 {
 
   protected function before() 
@@ -19,7 +19,8 @@ class Incomes extends Authenticated
   {
     View::renderTemplate('Expense/expense.html', [
       'maxDate' => Date::currentDate(),
-      'expenseCategories' => Expense::getIncomeCategories()
+      'expenseCategories' => Expense::getExpenseCategories(),
+      'paymentMethods' => Expense::getPaymentMethods()
     ]);
   }
 
@@ -29,7 +30,7 @@ class Incomes extends Authenticated
     if (isset($_POST['amount'])) {
       $expense = new Expense($_POST);
 
-      if ($expense->saveIncome()) {
+      if ($expense->saveExpense()) {
         Flash::addMessage('Expense successfully added!', FLASH::SUCCESS);
         $this->redirect('/expenses/index');
       } else {
@@ -38,7 +39,8 @@ class Incomes extends Authenticated
         View::renderTemplate('Expense/expense.html', [
           'expense' => $expense,
           'maxDate' => Date::currentDate(),
-          'expenseCategories' => Expense::getIncomeCategories()
+          'expenseCategories' => Expense::getExpenseCategories(),
+          'paymentMethods' => Expense::getPaymentMethods()
         ]);
 
       }
