@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block title %}Add income{% endblock %}
+
+
+{% block footer %}
+
+<script>
+
+
+  $.validator.addMethod('validNotes',
+    function (value, element, param) {
+      if (value != '') {
+        if (/^[a-zA-Z0-9- ]*$/.test(value) == false) {
+          return false;
+        }
+      }
+      return true;
+    },
+    'Notes can only contain letters and numbers'
+  );
+
+  $(document).ready(function () {
+
+    $('#formAddIncome').validate({
+      rules: {
+        amount: {
+          required: true
+        },
+        date: {
+          required: true
+        },
+        category: {
+          required: true
+        },
+        notes:{
+          validNotes: true
+        }
+      }
+    });
+  });
+
+</script>
+
+{% endblock %}
+
+
+{% block body %}
+
+<nav class="navbar navbar-expand-lg bg-light py-3 border-bottom">
+  <div class="container">
+    <a class="navbar-brand" href="/menu/index">E-WALLET</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse text-center" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="/menu/index">Main Menu</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" href="/incomes/index">Add Income</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" href="add-expense.php">Add Expense</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" href="view-balance-current.php">View Balance</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" href="#">Settings</a>
+        </li>
+      </ul>
+      <a href="/logout"><button class="btn btn-outline-success " type="submit">Logout</button></a>
+    </div>
+  </div>
+</nav>
+
+
+
+<main>
+  <div class="container">
+    <h3 class="py-3 text-center">Add income</h3>
+    <div class="form py-1">
+      <form method="post" action="/incomes/new" class="bg-white rounded form-add" id="formAddIncome"
+        style="max-width: 60%;">
+        <div class="row row-add justify-content-center align-items-center text-center">
+          <div class="col-12 col-sm-10  col-md-7 my-2">
+            <label for="amount">Amount</label>
+            <input type="number" class="form-control" name="amount" id="amount" placeholder="Enter amount"
+              max="4294967295" step="0.01" min="0.01" value="{{ income.amount }}" required>
+            {% if income.errors['amount'] is defined %}
+            <div style="color: red;">{{ income.errors['amount']}}</div>
+            {% endif %}
+          </div>
+          <div class="col-12 col-sm-10  col-md-7 my-2">
+            <label for="date">Date</label>
+            <input type="date" class="form-control" name="date" id="date" min="2000-01-01" value="{{ maxDate }}"
+              max="{{ maxDate }}" required>
+            {% if income.errors['maxDate'] is defined %}
+            <div style="color: red;">{{ income.errors['maxDate'] }}</div>
+            {% endif %}
+            {% if income.errors['minDate'] is defined %}
+            <div style="color: red;">{{ income.errors['minDate'] }}</div>
+            {% endif %}
+          </div>
+          <div class="col-12 col-sm-10 col-md-7  my-2">
+            <label for="category">Category</label>
+            <select class="form-select" aria-label="Default select example" name="category" id="category"
+              value="{{ income.category }}" required>
+              {% for incomes in incomeCategories %}
+              <option value="{{ incomes.id }}">{{ incomes.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-12 col-sm-10  col-md-7 my-2">
+            <label for="exampleFormControlTextarea1" class="form-label">Notes:</label>
+            <textarea class="form-control" name="notes" id="exampleFormControlTextarea1"
+              rows="3">{{ income.notes }}</textarea>
+            {% if income.errors['notes'] is defined %}
+            <div style="color: red;">{{ income.errors['notes'] }}</div>
+            {% endif %}
+          </div>
+          <div class="row justify-content-center align-items-center">
+            <div class="col-6 col-sm-6 col-md-3 my-4">
+              <div class="d-grid gap-2">
+                <button class="btn btn-success btn-lg" name="submit" type="submit">Add</button>
+              </div>
+            </div>
+            <div class="col-6 col-sm-6 col-md-3 my-4">
+              <div class="d-grid gap-2">
+                <a href="/menu/index"><button class="btn btn-danger btn-lg" type="button">Cancel</button></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</main>
+
+
+{% endblock %}
