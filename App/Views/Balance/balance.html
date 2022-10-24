@@ -1,0 +1,240 @@
+{% extends "base.html" %}
+
+{% block title %}Add income{% endblock %}
+
+{% block body %}
+
+<nav class="navbar navbar-expand-lg bg-light py-3 border-bottom">
+  <div class="container">
+    <a class="navbar-brand" href="/menu/index">E-WALLET</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse text-center" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="/menu/index">Main Menu</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" href="/incomes/index">Add Income</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" href="/expenses/index">Add Expense</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" href="/balances/index">View Balance</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" href="#">Settings</a>
+        </li>
+      </ul>
+      <a href="/logout"><button class="btn btn-outline-success " type="submit">Logout</button></a>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="row justify-content-center align-items-center text-center border-bottom my-1">
+    <div class="col-6 col-sm-6  col-md-2 my-2">
+      <div class="dropdown">
+        <button style="background-color: #009879;" class="btn btn-secondary dropdown-toggle" type="button"
+          id="dropdownMenuButton" data-bs-toggle='dropdown' aria-haspopup="true" aria-expanded="false">
+          Select Period
+        </button>
+        <div style="background-color: #f0f2f5;" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+          <a style="color: #1877f2;" class="dropdown-item" href="/balances/index">Current Month</a>
+          <a style="color: #1877f2;" class="dropdown-item" href="/balances/previous">Previous Month</a>
+          <button style="color: #1877f2;" type="button" class="dropdown-item" data-bs-toggle="modal"
+            data-bs-target="#exampleModal"> Define Period </button>
+        </div>
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Define Time Period:</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <form style="box-shadow: none;" action="/balances/period" method="post">
+                  <label for="firstDate">From: </label>
+                  <input style="text-align: center; display: block;margin: auto;width: 200px;" type="date"
+                    name="firstDate" id="firstDate" min="2000-01-01" value="{{ maxDate }}"
+                    max="{{ maxDate }}" required>
+                  <label for="secondDate">To: </label>
+                  <input style="text-align: center;display: block;margin: auto;width: 200px;" type="date"
+                    name="secondDate" id="secondDate" min="2000-01-01" value="{{ maxDate }}"
+                    max="{{ maxDate }}" required>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-success">Save</button>
+              </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="row justify-content-center align-items-center">
+    <div class="col-10 mx-auto">
+      <div class="type">Incomes</div>
+    </div>
+  </div>
+  <div class="row justify-content-center align-items-center">
+    <div class="col-8  col-md-5 table-responsive">
+      <table class="content-table table">
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>Category</th>
+            <th>Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for income in incomes %}
+          <tr>
+            <td>{{ loop.index }} </td>
+            <td>{{ income.name }}</td>
+            <td class="income-amount">{{ income.amount }}</td>
+          </tr>
+          {% endfor %}
+          <tr class="last">
+            <td></td>
+            <td>Total: </td>
+            <td class="income-total">{{ incomesAmount }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="col-8  col-md-6">
+      <div style="width: 300px; margin: auto;">
+        <canvas style="display: inline-block;" id="myChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="row justify-content-center align-items-center">
+    <div class="col-10 mx-auto">
+      <div class="type">Expenses</div>
+    </div>
+    <div class="col-8  col-md-5 table-responsive">
+      <table class="content-table table">
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>Category</th>
+            <th>Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for expense in expenses %}
+          <tr>
+            <td>{{ loop.index }} </td>
+            <td>{{ expense.name }}</td>
+            <td class="expense-amount">{{ expense.amount }}</td>
+          </tr>
+          {% endfor %}
+          <tr class="last">
+            <td></td>
+            <td>Total: </td>
+            <td class="expense-total">{{ expensesAmount }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="col-8  col-md-6">
+      <div style="width: 300px; margin: auto;">
+        <canvas style="display: inline-block;" id="myChartOne"></canvas>
+      </div>
+    </div>
+  </div>
+  </main>
+
+  <div class="summary">
+    Balance: <span class="balance"></span>
+  </div>
+
+  {% set incomesCategories=[] %}
+  {% set incomeSumsInCategory=[] %}
+ 
+  {% for key,value in incomesCategoriesSum %}
+    {% set incomesCategories = incomesCategories | merge([value['name']]) %}
+    {% set incomeSumsInCategory = incomeSumsInCategory | merge([value['SUM(inc.amount)']]) %}
+  {% endfor %}
+
+  {% set expensesCategories=[] %}
+  {% set expenseSumsInCategory=[] %}
+ 
+  {% for key,value in expensesCategoriesSum %}
+    {% set expensesCategories = expensesCategories | merge([value['name']]) %}
+    {% set expenseSumsInCategory = expenseSumsInCategory | merge([value['SUM(ex.amount)']]) %}
+  {% endfor %}
+
+  <script>
+    const incomeTotalAmount = parseFloat(document.querySelector('.income-total').textContent);
+    const expenseTotalAmount = parseFloat(document.querySelector('.expense-total').textContent);
+
+    let balance = incomeTotalAmount - expenseTotalAmount;
+    balance = balance.toFixed(2);
+    const balanceDiv = document.querySelector('.balance');
+
+    if (balance >= 0) {
+      balanceDiv.textContent = "+" + balance;
+      balanceDiv.style.color = 'green';
+    } else {
+      balanceDiv.textContent = balance;
+      balanceDiv.style.color = 'red';
+    }
+  </script>
+
+  <script>
+    const data = {
+        labels: {{ incomesCategories|json_encode|raw }},
+        datasets: [{
+          label: 'My First Dataset',
+          data: {{ incomeSumsInCategory|json_encode|raw }},
+          backgroundColor: ["#ea5545", "#f46a9b", "#ef9b20", "#edbf33", "#ede15b", "#bdcf32", "#87bc45", "#27aeef", "#b33dc6"],
+          hoverOffset: 4
+        }]
+      };
+
+      const config = {
+        type: 'doughnut',
+        data: data,
+        options: {}
+      };
+
+      const myChart = new Chart(
+        document.getElementById('myChart'),
+        config
+      );
+
+      const dataSecond = {
+        labels: {{ expensesCategories|json_encode|raw }},
+        datasets: [{
+          label: 'My First Dataset',
+          data: {{ expenseSumsInCategory|json_encode|raw }},
+          backgroundColor: ["#fd7f6f", "#7eb0d5", "#b2e061", "#bd7ebe", "#ffb55a", "#ffee65", "#beb9db", "#fdcce5", "#8bd3c7"],
+          hoverOffset: 4
+        }]
+      };
+
+      const configSecond = {
+        type: 'doughnut',
+        data: dataSecond,
+        options: {}
+      };
+
+      const myChartOne = new Chart(
+        document.getElementById('myChartOne'),
+        configSecond
+      );
+  </script>
+
+  {% endblock %}
