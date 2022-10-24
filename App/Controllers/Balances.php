@@ -17,14 +17,34 @@ class Balances extends Authenticated
 
   public function indexAction()
   {
+    $startDate = Date::startMonthDate();
+    $endDate = Date::endMonthDate();
+
     View::renderTemplate('Balance/balance.html',[
-      'incomes' => Balance::getUserIncomes(Date::startMonthDate(),Date::endMonthDate()),
-      'expenses' => Balance::getUserExpenses(Date::startMonthDate(),Date::endMonthDate()),
-      'incomesAmount' => Balance::getIncomesSum(Date::startMonthDate(),Date::endMonthDate()),
-      'expensesAmount' => Balance::getExpensesSum(Date::startMonthDate(),Date::endMonthDate()),
-      'incomesCategoriesSum' => Balance::getIncomesCategoriesSum(Date::startMonthDate(),Date::endMonthDate()),
-      'expensesCategoriesSum' => Balance::getExpensesCategoriesSum(Date::startMonthDate(),Date::endMonthDate())
+      'incomes' => Balance::getUserIncomes($startDate, $endDate),
+      'expenses' => Balance::getUserExpenses($startDate, $endDate),
+      'incomesAmount' => Balance::getIncomesSum($startDate, $endDate),
+      'expensesAmount' => Balance::getExpensesSum($startDate, $endDate),
+      'incomesCategoriesSum' => Balance::getIncomesCategoriesSum($startDate, $endDate),
+      'expensesCategoriesSum' => Balance::getExpensesCategoriesSum($startDate, $endDate)
     ]);
   }
+
+  
+  public function previousAction()
+  {
+    $startDate = Date::previousMonthStartDate();
+    $endDate = Date::previousMonthEndDate();
+
+    View::renderTemplate('Balance/balance.html',[
+      'incomes' => Balance::getUserIncomes($startDate, $endDate),
+      'expenses' => Balance::getUserExpenses($startDate, $endDate),
+      'incomesAmount' => Balance::getIncomesSum($startDate, $endDate),
+      'expensesAmount' => Balance::getExpensesSum($startDate, $endDate),
+      'incomesCategoriesSum' => Balance::getIncomesCategoriesSum($startDate, $endDate),
+      'expensesCategoriesSum' => Balance::getExpensesCategoriesSum($startDate, $endDate)
+    ]);
+  }
+
 
 }
