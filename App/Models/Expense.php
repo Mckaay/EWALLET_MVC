@@ -121,6 +121,9 @@ class Expense extends \Core\Model
 
   protected function checkNotes()
   {
+    if($this->notes == ''){
+      return true;
+    }
     if (!ctype_alnum($this->notes)) {
       return false;
     }
