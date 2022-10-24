@@ -17,7 +17,12 @@ class Balances extends Authenticated
 
   public function indexAction()
   {
-    View::renderTemplate('Balance/balance.html');
+    View::renderTemplate('Balance/balance.html',[
+      'incomes' => Balance::getUserIncomes(Date::startMonthDate(),Date::endMonthDate()),
+      'expenses' => Balance::getUserExpenses(Date::startMonthDate(),Date::endMonthDate()),
+      'incomesAmount' => Balance::getIncomesSum(Date::startMonthDate(),Date::endMonthDate()),
+      'expensesAmount' => Balance::getExpensesSum(Date::startMonthDate(),Date::endMonthDate())
+    ]);
   }
 
 }

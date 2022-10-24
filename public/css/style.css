@@ -151,11 +151,6 @@ span {
   margin: auto !important;
 }
 
-.table-responsive {
-  max-height: 300px !important;
-}
-
-
 
 @media (max-width: 990px) {
   .active {

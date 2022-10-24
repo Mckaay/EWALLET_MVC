@@ -97,6 +97,18 @@
           </tr>
         </thead>
         <tbody>
+          {% for income in incomes %}
+          <tr>
+            <td >{{ loop.index }} </td>
+            <td>{{ income.name }}</td>
+            <td class="income-amount">{{ income.amount }}</td>
+          </tr>
+              {% endfor %}
+          <tr class = "last">
+            <td ></td>
+            <td>Total: </td>
+            <td class="income-total">{{  incomesAmount }}</td>
+          </tr>
         </tbody>
       </table>
     </div>
@@ -121,6 +133,18 @@
           </tr>
         </thead>
         <tbody>
+          {% for expense in expenses %}
+          <tr>
+            <td >{{ loop.index }} </td>
+            <td>{{ expense.name }}</td>
+            <td class="expense-amount">{{ expense.amount }}</td>
+          </tr>
+              {% endfor %}
+          <tr class = "last">
+            <td ></td>
+            <td>Total: </td>
+            <td class="expense-total">{{  expensesAmount }}</td>
+          </tr>
         </tbody>
       </table>
     </div>
