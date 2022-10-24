@@ -56,15 +56,15 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
               <div class="modal-body">
-                <form style="box-shadow: none;" action="view-balance-custom.php" method="post">
+                <form style="box-shadow: none;" action="/balances/period" method="post">
                   <label for="firstDate">From: </label>
                   <input style="text-align: center; display: block;margin: auto;width: 200px;" type="date"
-                    name="firstDate" id="firstDate" min="2000-01-01" value="<?php echo date('Y-m-d'); ?>"
-                    max="<?= date('Y-m-d'); ?>" required>
+                    name="firstDate" id="firstDate" min="2000-01-01" value="{{ maxDate }}"
+                    max="{{ maxDate }}" required>
                   <label for="secondDate">To: </label>
                   <input style="text-align: center;display: block;margin: auto;width: 200px;" type="date"
-                    name="secondDate" id="secondDate" min="2000-01-01" value="<?php echo date('Y-m-d'); ?>"
-                    max="<?= date('Y-m-d'); ?>" required>
+                    name="secondDate" id="secondDate" min="2000-01-01" value="{{ maxDate }}"
+                    max="{{ maxDate }}" required>
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
