@@ -99,15 +99,15 @@
         <tbody>
           {% for income in incomes %}
           <tr>
-            <td >{{ loop.index }} </td>
+            <td>{{ loop.index }} </td>
             <td>{{ income.name }}</td>
             <td class="income-amount">{{ income.amount }}</td>
           </tr>
-              {% endfor %}
-          <tr class = "last">
-            <td ></td>
+          {% endfor %}
+          <tr class="last">
+            <td></td>
             <td>Total: </td>
-            <td class="income-total">{{  incomesAmount }}</td>
+            <td class="income-total">{{ incomesAmount }}</td>
           </tr>
         </tbody>
       </table>
@@ -135,15 +135,15 @@
         <tbody>
           {% for expense in expenses %}
           <tr>
-            <td >{{ loop.index }} </td>
+            <td>{{ loop.index }} </td>
             <td>{{ expense.name }}</td>
             <td class="expense-amount">{{ expense.amount }}</td>
           </tr>
-              {% endfor %}
-          <tr class = "last">
-            <td ></td>
+          {% endfor %}
+          <tr class="last">
+            <td></td>
             <td>Total: </td>
-            <td class="expense-total">{{  expensesAmount }}</td>
+            <td class="expense-total">{{ expensesAmount }}</td>
           </tr>
         </tbody>
       </table>
@@ -159,6 +159,22 @@
   <div class="summary">
     Balance: <span class="balance"></span>
   </div>
+
+  {% set incomesCategories=[] %}
+  {% set incomeSumsInCategory=[] %}
+ 
+  {% for key,value in incomesCategoriesSum %}
+    {% set incomesCategories = incomesCategories | merge([value['name']]) %}
+    {% set incomeSumsInCategory = incomeSumsInCategory | merge([value['SUM(inc.amount)']]) %}
+  {% endfor %}
+
+  {% set expensesCategories=[] %}
+  {% set expenseSumsInCategory=[] %}
+ 
+  {% for key,value in expensesCategoriesSum %}
+    {% set expensesCategories = expensesCategories | merge([value['name']]) %}
+    {% set expenseSumsInCategory = expenseSumsInCategory | merge([value['SUM(ex.amount)']]) %}
+  {% endfor %}
 
   <script>
     const incomeTotalAmount = parseFloat(document.querySelector('.income-total').textContent);
@@ -177,50 +193,48 @@
     }
   </script>
 
-<script>
-  const data = {
-    labels: ,
-    datasets: [{
-      label: 'My First Dataset',
-      data: ,
-      backgroundColor: ["#ea5545", "#f46a9b", "#ef9b20", "#edbf33", "#ede15b", "#bdcf32", "#87bc45", "#27aeef", "#b33dc6"],
-      hoverOffset: 4
-    }]
-  };
+  <script>
+    const data = {
+        labels: {{ incomesCategories|json_encode|raw }},
+        datasets: [{
+          label: 'My First Dataset',
+          data: {{ incomeSumsInCategory|json_encode|raw }},
+          backgroundColor: ["#ea5545", "#f46a9b", "#ef9b20", "#edbf33", "#ede15b", "#bdcf32", "#87bc45", "#27aeef", "#b33dc6"],
+          hoverOffset: 4
+        }]
+      };
 
-  const config = {
-    type: 'doughnut',
-    data: data,
-    options: {}
-  };
+      const config = {
+        type: 'doughnut',
+        data: data,
+        options: {}
+      };
 
-  const myChart = new Chart(
-    document.getElementById('myChart'),
-    config
-  );
+      const myChart = new Chart(
+        document.getElementById('myChart'),
+        config
+      );
 
-  const dataSecond = {
-    labels:  ,
-    datasets: [{
-      label: 'My First Dataset',
-      data: ,
-      backgroundColor: ["#fd7f6f", "#7eb0d5", "#b2e061", "#bd7ebe", "#ffb55a", "#ffee65", "#beb9db", "#fdcce5", "#8bd3c7"],
-      hoverOffset: 4
-    }]
-  };
+      const dataSecond = {
+        labels: {{ expensesCategories|json_encode|raw }},
+        datasets: [{
+          label: 'My First Dataset',
+          data: {{ expenseSumsInCategory|json_encode|raw }},
+          backgroundColor: ["#fd7f6f", "#7eb0d5", "#b2e061", "#bd7ebe", "#ffb55a", "#ffee65", "#beb9db", "#fdcce5", "#8bd3c7"],
+          hoverOffset: 4
+        }]
+      };
 
-  const configSecond = {
-    type: 'doughnut',
-    data: dataSecond,
-    options: {}
-  };
+      const configSecond = {
+        type: 'doughnut',
+        data: dataSecond,
+        options: {}
+      };
 
-  const myChartOne = new Chart(
-    document.getElementById('myChartOne'),
-    configSecond
-  );
-</script>
+      const myChartOne = new Chart(
+        document.getElementById('myChartOne'),
+        configSecond
+      );
+  </script>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  
   {% endblock %}
