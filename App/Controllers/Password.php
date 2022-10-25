@@ -17,10 +17,13 @@ class Password extends \Core\Controller
 
   public function requestResetAction()
   {
-    User::sendPasswordReset($_POST['email']);
-
-    Flash::addMessage('Request has been sent. Please check your email address.',Flash::INFO);
-    $this->redirect('/Password/forgot');
+    if (User::sendPasswordReset($_POST['email'])) {
+      Flash::addMessage('Request has been sent. Please check your email address.', Flash::INFO);
+      $this->redirect('/Password/forgot');
+    } else {
+      Flash::addMessage('Theres no user assigned to this email. Request sent failed!', Flash::DANGER);
+      $this->redirect('/Password/forgot');
+    }
   }
 
   public function resetAction()
@@ -40,11 +43,10 @@ class Password extends \Core\Controller
 
     if ($user->resetPassword($_POST['password'])) {
 
-      Flash::addMessage('Password successfully changed! You can login with your new password.',Flash::SUCCESS);
+      Flash::addMessage('Password successfully changed! You can login with your new password.', Flash::SUCCESS);
       $this->redirect('/');
-    }
-    else {
-      View::renderTemplate('Password/reset.html',[
+    } else {
+      View::renderTemplate('Password/reset.html', [
         'token' => $token,
         'user' => $user
       ]);
@@ -58,7 +60,7 @@ class Password extends \Core\Controller
     if ($user) {
       return $user;
     } else {
-      Flash::addMessage('Password reset link invalid or expired you need to request another one',Flash::DANGER);
+      Flash::addMessage('Password reset link invalid or expired you need to request another one', Flash::DANGER);
       $this->redirect('/Password/forgot');
     }
   }

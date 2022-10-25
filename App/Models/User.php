@@ -252,6 +252,7 @@ class User extends \Core\Model
                 $user->sendPasswordResetEmail();
             }
         }
+        return $user;
     }
 
     protected function startPasswordReset()
