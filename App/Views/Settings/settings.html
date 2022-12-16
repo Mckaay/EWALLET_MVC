@@ -1,0 +1,508 @@
+{% extends "base.html" %}
+
+{% block title %}Settings{% endblock %}
+
+
+{% block footer %}
+
+
+<link rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..24,100..700,0..1,-50..200" />
+<link rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@40,200,0,0" />
+
+
+<style>
+  .material-symbols-outlined {
+    font-variation-settings:
+      'FILL' 0,
+      'wght' 400,
+      'GRAD' 0,
+      'opsz' 24
+  }
+
+  .editButton {
+    max-height: 4rem;
+  }
+
+  .userEditButtons {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+  }
+
+
+
+  .content-table.table.categories tbody tr {
+    background-color: white;
+    border-bottom: 2px solid #009879;
+  }
+
+  .content-table.table.categories tbody tr:hover {
+    background-color: #f3f3f3;
+    cursor: pointer;
+  }
+
+  .addIconTh:hover {
+    background-color: #008767;
+    cursor: pointer;
+  }
+
+  .showCategories {
+    border: 2px solid #009879;
+    border-radius: 5px;
+    margin: auto;
+    background-color: white;
+    text-align: center;
+    max-width: 300px;
+  }
+
+  .showCategories:hover {
+    cursor: pointer;
+    background-color: #f0f2f5;
+  }
+</style>
+
+<script>
+
+  $(document).ready(function () {
+
+    $('#changeCategory').validate({
+      rules: {
+        newCategoryName: {
+          required: true,
+          minlength: 4,
+          maxlength: 20
+        },
+      }
+    });
+  });
+
+
+  $('#changeExpenseCategory').validate({
+      rules: {
+        newCategoryName: {
+          required: true,
+          minlength: 4,
+          maxlength: 20
+        },
+      }
+    });
+
+
+    $('#addNewPaymentMethod').validate({
+      rules: {
+        newPaymentMethodName: {
+          required: true,
+          minlength: 4,
+          maxlength: 20
+        },
+      }
+    });
+
+
+    
+    $('#addNewIncomeCategory').validate({
+      rules: {
+        newIncomeCategoryName: {
+          required: true,
+          minlength: 4,
+          maxlength: 20
+        },
+      }
+    });
+
+    $('#addNewExpenseCategory').validate({
+      rules: {
+        newExpenseCategoryName: {
+          required: true,
+          minlength: 4,
+          maxlength: 20
+        },
+      }
+    });
+
+    $('#changePaymentMethod').validate({
+      rules: {
+        changePayment: {
+          required: true,
+          minlength: 4,
+          maxlength: 20
+        },
+      }
+    });
+
+</script>
+
+{% endblock %}
+
+
+{% block body %}
+
+<nav class="navbar navbar-expand-lg bg-light py-3 border-bottom">
+  <div class="container">
+    <a class="navbar-brand" href="/menu/index">E-WALLET</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse text-center" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="/menu/index">Main Menu</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" href="/incomes/index">Add Income</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" href="/expenses/index">Add Expense</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" href="/balances/index">View Balance</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" href="/settings/index">Settings</a>
+        </li>
+      </ul>
+      <a href="/logout"><button class="btn btn-outline-success " type="submit">Logout</button></a>
+    </div>
+  </div>
+</nav>
+
+
+
+<main>
+  <div class="container p-1">
+    <h3 style="text-align:center;margin-top: 2rem;">Settings</h3>
+      <div class="row justify-content-center align-items-center">
+        <div id="showHideCategoriesButton" style="margin: auto;" class="col-10 pt-4">
+          <h6 style = "font-size: 1.2rem;" class="showCategories py-2">Income Categories <span style="vertical-align: middle;"
+              class="material-symbols-outlined">
+              expand_more
+            </span></h6>
+        </div>
+        <div style="display:none;" id="showHideCategoriesTable"
+          class="table-responsive col-12 col-sm-8 col-md-8 col-lg-6">
+          <table style="transition: max-height 3s ease-in-out !important;" class="content-table table categories"
+            id="incomesCategoriesTable">
+            <thead>
+              <tr>
+                <th style="vertical-align: middle;"> <span style="vertical-align: middle;">Incomes Categories</span>
+                </th>
+                <th class="addIconTh" data-bs-toggle="modal" data-bs-target="#addIncomeCategory"
+                  style="vertical-align: middle;"><span class="px-1 material-symbols-outlined addIncomeIcon"
+                    style="vertical-align: middle;">
+                    add_circle
+                  </span></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for incomeCategory in incomeCategories %}
+              <tr id="{{ incomeCategory.id }}" data-bs-toggle="modal" data-bs-target="#incomeCategories">
+                <td id="categoryName">{{ incomeCategory.name }}</td>
+                <td><span class="material-symbols-outlined px-1">edit_square</span></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal fade" data-bs-keyboard="false" data-bs-backdrop="static" id="incomeCategories" tabindex="-1"
+        aria-labelledby="incomeCategoriesLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <form method="post" id="changeCategory">
+              <div class="modal-header">
+                <h6 class="modal-title" id="incomeCategoriesLabel">Edit Income Category</h5>
+                  <button type="button" class="btn-close closeIncome" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <div class="form-group incomeCategoriesInput">
+                  <label for="newCategoryName">Category Name</label>
+                  <input type="text" class="form-control" id="newCategoryName" name="newCategoryName">
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button id="deleteIncomeCategory" formaction="/settings/deleteIncomeCategory" type="submit"
+                  class="btn btn-danger">Delete category</button>
+                <button id="updateIncomeCategory" formaction="/settings/updateIncomeCategory" type="submit"
+                  class="btn btn-success">Change Category</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="container">
+        <div class="row justify-content-center align-items-center">
+          <div id="showHideCategoriesButton" style="margin: auto;" class="col-10 pt-4">
+            <h6 style = "font-size: 1.2rem;" class="showCategories py-2">Expense Categories <span style="vertical-align: middle;"
+                class="material-symbols-outlined">
+                expand_more
+              </span></h6>
+          </div>
+          <div style="display:none;" id="showHideCategoriesTable"
+            class="table-responsive col-12 col-sm-8 col-md-8 col-lg-6 p-0">
+            <table style="transition: max-height 3s ease-in-out !important;" class="content-table table categories"
+              id="expenseCategoriesTable">
+              <thead>
+                <tr>
+                  <th style="vertical-align: middle;"> <span style="vertical-align: middle;">Expense Categories</span>
+                  </th>
+                  <th style="vertical-align: middle;">Limit</th>
+                  <th class="addIconTh" data-bs-toggle="modal" data-bs-target="#addExpenseCategory"
+                    style="vertical-align: middle;"><span class="px-1 material-symbols-outlined addExpenseIcon"
+                      style="vertical-align: middle;">
+                      add_circle
+                    </span></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% set continue = false %}
+                {% for expenseCategory in expenseCategories %}
+                <tr id="{{ expenseCategory.id }}" data-bs-toggle="modal" data-bs-target="#expenseCategories">
+                  <td id="categoryName">{{ expenseCategory.name }}</td>
+                  {% if expenseCategory.max_limit == 0 %}
+                    {% set continue = true %}
+                  {% endif %}
+                  {% if not continue %}
+                    <td id="categoryLimit">{{ expenseCategory.max_limit }}</td>
+                  {% endif %}
+                  {% if continue %}
+                    <td style = "opacity: 0;" id="categoryLimit">0</td>
+                    {% set continue = false %}
+                  {% endif %}
+                  <td><span class="material-symbols-outlined px-1">edit_square</span></td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal fade" data-bs-keyboard="false" data-bs-backdrop="static" id="expenseCategories" tabindex="-1"
+          aria-labelledby="expenseCategoriesLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <form method="post" id="changeExpenseCategory">
+                <div class="modal-header">
+                  <h6 class="modal-title" id="expenseCategoriesLabel">Edit Expense Category</h5>
+                    <button type="button" class="btn-close closeExpense" data-bs-dismiss="modal"
+                      aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="form-group expenseCategoriesInput">
+                    <label for="newCategoryName">Category Name</label>
+                    <input type="text" class="form-control" id="newCategoryName" name="newCategoryName" required>
+                    <label for="newCategoryLimit">Category Limit</label>
+                    <input type="number" class="form-control" id="newCategoryLimit" name="newCategoryLimit"
+                    max="100000000" step="1" min="0" required>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button id="deleteExpenseCategory" formaction="/settings/deleteExpenseCategory" type="submit"
+                    class="btn btn-danger">Delete category</button>
+                  <button id="updateExpenseCategory" formaction="/settings/updateExpenseCategory" type="submit"
+                    class="btn btn-success">Change Category</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal fade" data-bs-keyboard="false" data-bs-backdrop="static" id="addIncomeCategory" tabindex="-1"
+          aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <form method="post" action="/settings/addIncomeCategory" id="addNewIncomeCategory">
+                <div class="modal-header">
+                  <h6 class="modal-title" id="newIncomeHeader">Add Income Category</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="form-group newIncomeCategoryInput">
+                    <label for="newIncomeCategoryName">Category Name</label>
+                    <input type="text" class="form-control" id="newIncomeCategoryName" name="newIncomeCategoryName">
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                  <button type="submit" class="btn btn-success">Add New Income Category</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal fade" data-bs-keyboard="false" data-bs-backdrop="static" id="addExpenseCategory" tabindex="-1"
+          aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <form method="post" action="/settings/addExpenseCategory" id="addNewExpenseCategory">
+                <div class="modal-header">
+                  <h6 class="modal-title" id="newExpenseHeader">Add Expense Category</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="form-group newExpenseCategoryInput">
+                    <label for="newExpenseCategoryName">Category Name</label>
+                    <input type="text" class="form-control" id="newExpenseCategoryName" name="newExpenseCategoryName">
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                  <button type="submit" class="btn btn-success">Add New Expense Category</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <div class="container">
+          <div class="row justify-content-center align-items-center">
+            <div id="showHideCategoriesButton" style="margin: auto;" class="col-10 pt-4">
+              <h6 style = "font-size: 1.2rem;" class="showCategories py-2">Payment Methods <span style="vertical-align: middle;"
+                  class="material-symbols-outlined">
+                  expand_more
+                </span></h6>
+            </div>
+            <div style="display:none;" id="showHideCategoriesTable"
+              class="table-responsive col-12 col-sm-8 col-md-8 col-lg-6">
+              <table style="transition: max-height 3s ease-in-out !important;" class="content-table table categories"
+                id="paymentMethodsTable">
+                <thead>
+                  <tr>
+                    <th style="vertical-align: middle;"> <span style="vertical-align: middle;">Payment Methods</span>
+                    </th>
+                    <th class="addIconTh" data-bs-toggle="modal" data-bs-target="#addPaymentMethod"
+                      style="vertical-align: middle;"><span class="px-1 material-symbols-outlined addExpenseIcon"
+                        style="vertical-align: middle;">
+                        add_circle
+                      </span></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for paymentMethod in paymentMethods %}
+                  <tr id="{{ paymentMethod.id }}" data-bs-toggle="modal" data-bs-target="#paymentMethods">
+                    <td id="categoryName">{{ paymentMethod.name }}</td>
+                    <td><span class="material-symbols-outlined px-1">edit_square</span></td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="modal fade" data-bs-keyboard="false" data-bs-backdrop="static" id="addPaymentMethod" tabindex="-1"
+            aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <form method="post" action="/settings/addPaymentMethod" id="addNewPaymentMethod">
+                  <div class="modal-header">
+                    <h6 class="modal-title" id="newPaymentHeader">Add Payment Method</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <div class="form-group newPaymentMethodInput">
+                      <label for="newPaymentMethodName">Payment Method Name</label>
+                      <input type="text" class="form-control" id="newPaymentMethodName" name="newPaymentMethodName">
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-success">Add New Payment Method</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal fade" data-bs-keyboard="false" data-bs-backdrop="static" id="paymentMethods" tabindex="-1"
+            aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <form method="post" id="changePaymentMethod">
+                  <div class="modal-header">
+                    <h6 class="modal-title" id="changePaymentHeader">Change Payment Method</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <div class="form-group changePaymentMethodInput">
+                      <label for="changePayment">Payment Method Name</label>
+                      <input type="text" class="form-control" id="changePayment" name="changePayment">
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="submit" class="btn btn-danger" formaction="/settings/deletePaymentMethod">Delete
+                      Method</button>
+                    <button type="submit" class="btn btn-success" formaction="/settings/updatePaymentMethod">Change
+                      Payment Method</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+          <div class="userEditButtons">
+            <button type="button" class="btn btn-danger mt-4 mb-2 mx-2 editButton" data-bs-toggle="modal"
+              data-bs-target="#deleteAccount">
+              Delete Account
+            </button>
+            <button type="button" class="btn btn-danger mt-4 mb-2 mx-2 editButton" data-bs-toggle="modal"
+              data-bs-target="#resetTransactions">
+              Reset Transactions
+            </button>
+          </div>
+
+          <!-- Modal -->
+          <div class="modal fade" id="deleteAccount" tabindex="-1" aria-labelledby="deleteAccountLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <form method="post" action="/settings/deleteAccount">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="deleteAccountLabel">Delete Account</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <span style="color: red;">Are you sure you wanna delete your account?</span>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" name="submit" class="btn btn-danger">Delete Account</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal fade" id="resetTransactions" tabindex="-1" aria-labelledby="resetTransactionsLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <form method="post" action="/settings/resetTransactions">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="resetTransactionsLabel">Reset Transactions</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <span style="color: red;">Are you sure you wanna reset your transactions?</span>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" name="submit" class="btn btn-danger">Reset Transactions</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+
+</main>
+
+
+<script src = "/js/settings.js"></script>
+
+
+
+
+
+{% endblock %}

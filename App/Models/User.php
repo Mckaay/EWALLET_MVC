@@ -371,4 +371,17 @@ class User extends \Core\Model
         $stmt->execute();
 
     }
+
+    public static function deleteAccount(){
+
+        $sql = 'DELETE FROM users
+                WHERE id = :user_id';
+
+        $db = static::getDB();
+
+        $deleteAccount = $db->prepare($sql);
+        $deleteAccount->bindValue(':user_id', $_SESSION['user_id'],PDO::PARAM_INT);
+
+        return $deleteAccount->execute();
+    }
 }
