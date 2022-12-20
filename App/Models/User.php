@@ -95,7 +95,7 @@ class User extends \Core\Model
     protected function insertDefaultExpensesCategories($id)
     {
         $sql = 'INSERT INTO expenses_category_assigned_to_users
-         SELECT NULL,:user_id,name 
+         SELECT NULL,:user_id,name ,NULL
          FROM expenses_category_default';
 
         $db = static::getDB();

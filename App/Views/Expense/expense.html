@@ -1,9 +1,46 @@
 {% extends "base.html" %}
 
-{% block title %}Add income{% endblock %}
+{% block title %}Add expense{% endblock %}
 
 
 {% block footer %}
+
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&family=Mukta:wght@300;400;600;700;800&family=Noto+Sans:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+  table {
+    font-family: Mukta, sans-serif !important;
+    margin: auto !important;
+    background-color: white;
+    border-radius: 1rem;
+  }
+
+  .tableHeader {
+    color: #4f546c;
+    padding: 0.5rem !important;
+  }
+
+  .data {
+    border: 0;
+    padding: 0.4rem !important;
+  }
+
+  .exceedLimit {
+    background-color: #dc3545 !important;
+    border-radius: 0.4rem !important;
+    opacity: 80%;
+    font-weight: 700;
+  }
+
+  .underLimit {
+    background-color: #0cab47 !important;
+    border-radius: 0.4rem !important;
+    opacity: 80%;
+    font-weight: 700;
+  }
+
+
+</style>
 
 <script>
 
@@ -84,13 +121,33 @@
 <main>
   <div class="container">
     <h3 class="py-3 text-center">Add expense</h3>
+    <div class="row row-add justify-content-center align-items-center text-center">
+      <div class = "col-6 col-md-4">
+    <table class="table table-sm" style = "display: none;">
+      <thead>
+      <tr>
+        <th class = "tableHeader" scope="col">Limit</th>
+        <th class = "tableHeader" scope="col">Selected Month Sum + Amount </th>
+        <th class = "tableHeader" scope="col">Difference</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td class = "limit data"></td>
+        <td class = "currentAmount data"></td>
+        <td class = "difference data"></td>
+      </tr>
+      </tbody>
+    </table>
+      </div>
+    </div>
     <div class="form py-1">
       <form action="/expenses/new" class="bg-white rounded form-add" method="post" id="formAdd" style="max-width: 60%;">
         <div class="row row-add justify-content-center align-items-center text-center">
           <div class="col-12 col-sm-10  col-md-7 my-2">
             <label for="amount">Amount</label>
             <input type="number" class="form-control" name="amount" id="amount" placeholder="Enter amount" step="0.01"
-              min="0.01" max="4294967295" value="{{ expense.amount }}" required>
+              min="0.01" max="4294967295" value="0"  required>
               {% if expense.errors['amount'] is defined %}
             <div style="color: red;">{{ expense.errors['amount']}}</div>
             {% endif %}
@@ -102,7 +159,7 @@
           </div>
           <div class="col-12 col-sm-10  col-md-7 my-2">
             <label for="payment">Payment Method</label>
-            <select class="form-select" name="payment" aria-label="Default select example" id="payment" required>
+            <select class="form-select" name="payment" aria-label="Default select example" id="payment"   required>
               {% for methods in paymentMethods %}
               <option value="{{ methods.id }}">{{ methods.name }}</option>
               {% endfor %}
@@ -140,4 +197,76 @@
     </div>
   </div>
 </main>
+
+<script>
+
+  const dataInput = document.querySelector('#date');
+  const selectInput = document.querySelector('#category');
+  const amountInput = document.querySelector('#amount');
+  const limitTable = document.querySelector('table');
+
+  amountInput.addEventListener("change",() => {
+    limitTable.style.display = "";
+    renderTable();
+  })
+
+  selectInput.addEventListener("change",() => {
+    limitTable.style.display = "";
+    renderTable();
+  })
+
+  dataInput.addEventListener("change",() => {
+    limitTable.style.display = "";
+    renderTable();
+  })
+
+  const calculateDifference = (limit,amount) => {
+    return parseFloat(parseFloat(limit)-parseFloat(amount));
+  }
+
+  const renderTable = async () =>  {
+    limitTable.style.display = "";
+    const tableDataLimit  = document.querySelector('.limit');
+    const tableDataAmount  = document.querySelector('.currentAmount');
+    const tableDataDifference  = document.querySelector('.difference');
+
+    const selectedMonthSumOfExpenses = parseFloat(await getSumOfExpensesForSelectedMonth(selectInput.value,dataInput.value));
+    const monthSumPlusCurrentAmount = parseFloat(parseFloat(selectedMonthSumOfExpenses)+parseFloat(amountInput.value));
+    const categoryLimit = parseFloat(await getLimitForCategory());
+    const difference = calculateDifference(categoryLimit,monthSumPlusCurrentAmount);
+
+    tableDataLimit.innerText = categoryLimit.toFixed(2);
+    tableDataAmount.innerText = monthSumPlusCurrentAmount.toFixed(2);
+    tableDataDifference.innerText = difference.toFixed(2);
+
+    if(difference >= 0 ){
+      tableDataDifference.classList.remove('exceedLimit');
+      tableDataDifference.classList.add('underLimit');
+    }
+    else {
+      tableDataDifference.classList.remove('underLimit');
+      tableDataDifference.classList.add('exceedLimit');
+    }
+  }
+
+  const getSumOfExpensesForSelectedMonth = async () => {
+    const response = await fetch(`http://localhost:8080/api/expenses/${selectInput.value}?date=${dataInput.value}`);
+    const data = await response.json();
+    if(!data){
+      return 0;
+    }
+    else {
+      return data['SUM(ex.amount)'];
+    }
+  }
+
+  const getLimitForCategory = async () =>
+  {
+    const response = await fetch(`http://localhost:8080/api/limit/${selectInput.value}`);
+    const data = await response.json();
+    return data.max_limit;
+  }
+
+</script>
+
 {% endblock %}

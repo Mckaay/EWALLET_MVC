@@ -15,11 +15,11 @@ class Mail
     $mail->isSMTP();
     $mail->SMTPAuth = true;
     $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-    $mail->Host = Config::mailHost;
-    $mail->Port = Config::mailPort;
+    $mail->Host = $_ENV["mailHost"];
+    $mail->Port = $_ENV["mailPort"];
 
-    $mail->Username = Config::mailUsername;
-    $mail->Password = config::mailPassword;
+    $mail->Username = $_ENV["mailUsername"];
+    $mail->Password = $_ENV["mailPassword"];
 
     $mail->addAddress($to);
 

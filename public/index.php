@@ -21,6 +21,9 @@ set_exception_handler('Core\Error::exceptionHandler');
 
 session_start();
 
+$dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__));
+$dotenv->load();
+
 /**
  * Routing
  */
@@ -35,5 +38,10 @@ $router->add('password/reset/{token:[\da-f]+}', ['controller' => 'Password', 'ac
 $router->add('register/activate/{token:[\da-f]+}', ['controller' => 'Register', 'action' => 'activate']);
 $router->add('logout', ['controller' => 'Login', 'action' => 'destroy']);
 $router->add('settings', ['controller' => 'Settings', 'action' => 'index']);
-    
+$router->add('api/limit/{id:[\d]+}', ['controller' => 'Expenses', 'action' => 'limit']);
+$router->add('api/expenses/{id:[\d]+}', ['controller' => 'Expenses', 'action' => 'expenses']);
+
+
+
+
 $router->dispatch($_SERVER['QUERY_STRING']);

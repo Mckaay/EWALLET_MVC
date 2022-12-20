@@ -32,7 +32,7 @@ class Balance extends \Core\Model
     return $userIncomes->fetchAll(PDO::FETCH_ASSOC);
   }
 
-  public static function getUserExpenses($firstDate, $secondDate)
+  public static function getUserExpenses($firstDate, $secondDate): array|bool
   {
     $sql = 'SELECT cat.name,ex.amount FROM
     expenses_category_assigned_to_users AS cat,expenses AS ex
@@ -79,7 +79,7 @@ class Balance extends \Core\Model
     return $sumOfIncomes["SUM(inc.amount)"];
   }
 
-  public static function getExpensesSum($firstDate, $secondDate)
+  public static function getExpensesSum($firstDate,$secondDate)
   {
     $sql = 'SELECT SUM(ex.amount) FROM
     expenses_category_assigned_to_users AS cat,expenses AS ex
@@ -138,15 +138,41 @@ class Balance extends \Core\Model
 
     $db = static::getDB();
 
-    $userExpenses = $db->prepare($sql);
+    $expenseCategoriesSumQuery = $db->prepare($sql);
 
-    $userExpenses->bindValue(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
-    $userExpenses->bindValue(':first_date', $firstDate, PDO::PARAM_STR);
-    $userExpenses->bindValue(':second_date', $secondDate, PDO::PARAM_STR);
+    $expenseCategoriesSumQuery->bindValue(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
+    $expenseCategoriesSumQuery->bindValue(':first_date', $firstDate, PDO::PARAM_STR);
+    $expenseCategoriesSumQuery->bindValue(':second_date', $secondDate, PDO::PARAM_STR);
 
-    $userExpenses->execute();
+    $expenseCategoriesSumQuery->execute();
 
-    return $userExpenses->fetchAll(PDO::FETCH_ASSOC);
+    return $expenseCategoriesSumQuery->fetchAll(PDO::FETCH_ASSOC);
   }
+
+    public static function getExpensesSpecifiedCategorySum(string $firstDate,string $secondDate,string $expenseCategoryId): array|bool
+    {
+        $sql = 'SELECT cat.name,SUM(ex.amount) FROM
+    expenses_category_assigned_to_users AS cat,expenses AS ex
+    WHERE ex.user_id = :user_id
+    AND cat.id = ex.expense_category_assigned_to_user_id
+    AND cat.user_id = ex.user_id AND cat.id = :expenseCategoryId
+    AND date_of_expense BETWEEN :first_date AND :second_date
+    GROUP BY cat.name';
+
+        $db = static::getDB();
+
+        $expenseCategoriesSumQuery = $db->prepare($sql);
+
+        $expenseCategoriesSumQuery->bindValue(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
+        $expenseCategoriesSumQuery->bindValue(':first_date', $firstDate, PDO::PARAM_STR);
+        $expenseCategoriesSumQuery->bindValue(':second_date', $secondDate, PDO::PARAM_STR);
+        $expenseCategoriesSumQuery->bindValue(':expenseCategoryId', $expenseCategoryId, PDO::PARAM_INT);
+
+        $expenseCategoriesSumQuery->execute();
+
+        return $expenseCategoriesSumQuery->fetch(PDO::FETCH_ASSOC);
+    }
+
+
 
 }

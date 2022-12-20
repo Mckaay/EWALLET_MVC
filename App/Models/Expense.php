@@ -18,7 +18,7 @@ class Expense extends \Core\Model
     }
   }
 
-  public static function getExpenseCategories()
+  public static function getExpenseCategories(): array|bool
   {
     $sql = 'SELECT id,name,max_limit FROM expenses_category_assigned_to_users WHERE user_id = :user_id';
 
@@ -26,7 +26,7 @@ class Expense extends \Core\Model
 
     $expensesCategories = $db->prepare($sql);
 
-    $expensesCategories->bindValue(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
+    $expensesCategories->bindValue(':user_id', $id ?? $_SESSION['user_id'], PDO::PARAM_INT);
 
     $expensesCategories->execute();
 
@@ -279,5 +279,19 @@ class Expense extends \Core\Model
     return $deleteAllExpenses->execute();
 }
 
+    public static function getLimitForSelectedExpenseCategory(string $expenseCategoryId): array|bool
+    {
+        $sql = 'SELECT max_limit FROM expenses_category_assigned_to_users WHERE id = :expenseCategoryId';
+
+        $db = static::getDB();
+
+        $expensesCategories = $db->prepare($sql);
+
+        $expensesCategories->bindValue(':expenseCategoryId', $expenseCategoryId, PDO::PARAM_INT);
+
+        $expensesCategories->execute();
+
+        return $expensesCategories->fetch(PDO::FETCH_ASSOC);
+    }
 
 }

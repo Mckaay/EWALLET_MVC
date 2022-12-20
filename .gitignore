@@ -1,15 +1,9 @@
 vendor
-
 composer.lock
-
 LICENSE
-
 nginx-configuration.txt
-
 .vscode
-
 Config.*
-
 logs.*
-
 logs
+.env
